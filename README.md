@@ -1,8 +1,6 @@
 # CS-M20-OODataStructure-Work
 Moorpark Community College, Computer Science Course: CS M20 - Object Oriented Data Structure and Algorithm Analysis (Using C++)
 
-#8.2 Assignment:
-
 #Topic A Project:
 
 #Topic B Project:
