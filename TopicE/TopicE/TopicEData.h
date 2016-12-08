@@ -1,36 +1,41 @@
-#ifndef _TOPIC_E_DATA
-#define _TOPIC_E_DATA
+/***************************************************************
+	CS M20 Topic E Project - Heaps
+	Fall 2014
+	Martin Chetlen
+*********************************************************************/
 
-#include <iostream>
-#include <fstream>
+
+#include<iostream>
 #include <vector>
 
-class topicEData //aka, BOX
+using namespace std;
+
+class TopicEData
 {
+	friend ostream & operator << ( ostream & out, const TopicEData & val );
+
+public:
+	TopicEData( double load = 0 );
+	void add( double load );
+	double operator + ( double val ) const { return totLoad + val; };
+
+	bool operator < ( double val ) const { return totLoad < val; };
+	bool operator == ( double val ) const { return totLoad == val; };
+	bool operator <= ( double val ) const { return ( totLoad <= val ); };
+
+	bool operator < ( const TopicEData & val ) const { return totLoad < val.totLoad; };
+	bool operator == ( const TopicEData & val ) const { return totLoad == val.totLoad; };
+	bool operator <= ( const TopicEData & val ) const { return totLoad <= val.totLoad; };
+	bool operator > ( const TopicEData & val ) const { return totLoad > val.totLoad; };
+	bool operator >= ( const TopicEData & val ) const { return totLoad >= val.totLoad; };
+
+	double getTotLoad( void ) const { return totLoad; }
+	double getSeqNum( void ) const { return seqNum; }
+	int getTotItems( void ) const {return static_cast<int>( loads.size() ); }
+
 private:
 	double totLoad;
 	int seqNum;
-	std::vector<double> loads;
-public:
-	topicEData();
-	topicEData(int numbered); 
-	//By preventing the use of the default constructor, the client can not create boxes without numbers.
-	//^Well, that's what I WAS going to do, until it caused an error. See line 66 of ArrayMaxHeap.h
-	//this line creates error C3931 '_Elem': cannot call a function that has restriction specifiers that are incompatible with the ambient context when no default constructor
-	
-	void setNumber(int number);
-	void add(double amount);
-	double getTotal() const;
-	int getNumber() const;
-	int getNumLoads() const;
-	std::vector<double> getAllLoads() const;
-
-	bool topicEData::operator == (const topicEData & right) const;
-	bool topicEData::operator <= (const topicEData & right) const;
-	bool topicEData::operator >  (const topicEData & right) const;
+	vector<double> loads;
+	static int lastSeqNum;
 };
-
-std::ostream &operator << (std::ostream & out, const topicEData & val);
-std::istream &operator >> (std::istream &in, topicEData &val);
-
-#endif

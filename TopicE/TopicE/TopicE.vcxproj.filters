@@ -15,22 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
     <Text Include="TopicEin.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HeapPriorityQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrecondViolatedExcept.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ArrayMaxHeap.h">
@@ -42,15 +32,18 @@
     <ClInclude Include="TopicEData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrecondViolatedExcep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TopicE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TopicEData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrecondViolatedExcep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,211 +1,218 @@
-// TopicE.cpp : Defines the entry point for the console application.
-// #include "stdafx.h"
+/*********************************************************************
+	CS M20 Topic E Project - Heap Project
 
-/*
-* Project: TopicB
-* Class:   CS M20
-* Student: Rice, Sammuel D.
-* Edited:  20161029
-* Due on:  20161102
-* Version: 0.1 (History: 0.1)
-* VCS:     Not hosted atm
-* Status:
-Complete:		No
-Compiles:		Yes
-Errors:			Yes, Abort is called during runtime*
-Created via:	VisualStudio 2015
-*/
+	Martin Chetlen
+**********************************************************************/
 
-//*Note on the error, it appears to happen at different times in the code, as the output is different each time I run this program...
-
-/**
-1>------ Build started: Project: TopicE, Configuration: Debug Win32 ------
-1>  TopicE.cpp
-1>  TopicE.vcxproj -> C:\Users\Samous\Source\Repos\CS-M20-OODataStructure-Work\TopicE\Debug\TopicE.exe
-1>  TopicE.vcxproj -> C:\Users\Samous\Source\Repos\CS-M20-OODataStructure-Work\TopicE\Debug\TopicE.pdb (Full PDB)
-========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
-**/
 
 #pragma warning( disable: 4290 )  // disable warnings about the use of throw in function headers
 
 #include <iostream>
-#include <ctime>
+#include <fstream>
+#include <string>
+#include <deque>
 #include <vector>
-#include "HeapPriorityQueue.h"
-#include "TopicEData.h"
+#include <algorithm>
+#include <iterator>
+
 using namespace std;
 
-void getData(vector<topicEData>& list);
-bool valid(topicEData testMe);
-template<class ItemType>
-void printVector(vector<ItemType>& list);
-void endProgram(const int reason);
+#include "topiceData.h"
+#include "HeapPriorityQueue.h"
 
-int main()
+const double LOAD = 1.0;
+
+bool readFile( deque<double> &data, deque<double> &error );
+bool doBoxes( deque<double> & data, Heap_PriorityQueue<TopicEData> & pq, deque<TopicEData> &result, int & sum );
+void displayResults( Heap_PriorityQueue<TopicEData> &pq, const deque<TopicEData> &result, int & sum );
+
+int main( void )
 {
-	//input data
-	vector<topicEData> notProccessed;
-	getData(notProccessed);
+	try {
+		deque<double> data, error;
+		Heap_PriorityQueue<TopicEData>pq(200);  // initialize heap with a value for capacity
+		deque<TopicEData> result;
 
-	//check to make sure there IS data
-	if (notProccessed.empty())
-		endProgram(1);
-
-	cout << "Print all valid data" << endl;
-	//printVector(notProccessed);
-	cout << endl;
-
-	//create the Queue, with the first item being the last box in our vector
-	HeapPriorityQueue<topicEData> queue(notProccessed.size()); //with maxItems = size of notProccessed
-	queue.enqueue(notProccessed.back());
-	notProccessed.pop_back(); //remove the last box from the vector, as it is now in our queue
-
-	vector<topicEData> placeHolder, fullBoxes;
-	bool beenPlaced = false;
-	while (!notProccessed.empty()) //while we still have stuff to proccess
-	{
-		//cout << "!notProccessed.empty()" << endl;
-		if (queue.isEmpty())
+		if (!readFile(data, error))
 		{
-			//cout << "queue.isEmpty()" << endl;
-			queue.enqueue(notProccessed.back());
-			notProccessed.pop_back();
+			cout << "Nothing in input file\nProgram terminating." << endl;
+			exit(1);
 		}
+
+		cout << "Valid data entered is:" << endl;
+		ostream_iterator<double> screen(cout, " ");
+		copy(data.begin(), data.end(), screen);
+		cout << endl << static_cast<int>(data.size()) << " is the total number of valid data items\n" << endl;
+
+		if (error.size() > 0)
+		{
+			cout << "Invalid data entered:" << endl;
+			copy(error.begin(), error.end(), screen);
+			cout << endl << static_cast<int>(error.size()) << " is the total number of invalid data items\n" << endl;
+		}
+
+		int sum = 0;  // total number of items from boxes, not input file
+
+		if (doBoxes(data, pq, result, sum))
+			displayResults(pq, result, sum);
 		else
-		{
-			//cout << "NOT queue.isEmpty()" << endl;
-			beenPlaced = false;
-			while (!queue.isEmpty() && !beenPlaced)
-			{
-				//cout << "!queue.isEmpty() && !beenPlaced" << endl;
-				if ((queue.peekFront().getTotal() + notProccessed.back().getTotal()) <= 1.0) //if you can add both and be lessthan or equal to 1, do it
-				{
-					//cout << "added <= 1.0" << endl;
-					unique_ptr<topicEData> newBox = make_unique<topicEData>(queue.peekFront().getNumber());
-					newBox->add(queue.peekFront().getTotal());
-					newBox->add(notProccessed.back().getTotal());
-					queue.dequeue();
-					notProccessed.pop_back();
-					queue.enqueue(*newBox);
-					beenPlaced = true;
-				}
-				else //otherwise, try the next box in the queue
-				{
-					//cout << "try the next box in the queue" << endl;
-					placeHolder.push_back(queue.peekFront());
-					queue.dequeue();
-				}
-			}
-			//cout << "done with that while loop" << endl;
-			//rebuild our queue
-			while (!placeHolder.empty())
-			{
-				//cout << "put back queue items" << endl;
-				queue.enqueue(placeHolder.back());
-				placeHolder.pop_back();
-			}
-			cout << "done putting back" << endl;
-			//if the item didn't fit into anything...
-			if (!beenPlaced)
-			{
-				cout << "!beenPlaced" << endl;
-				cout << notProccessed.back() << endl;
-				queue.enqueue(notProccessed.back());
-				cout << "enqueue" << endl;
-				notProccessed.pop_back();
-				cout << "end if !been" << endl;
-			}
-			cout << "end else" << endl;
-		}
-		//cout << "end of else statement" << endl;
-		if (queue.peekFront().getTotal() >= 0.99)
-		{
-			//cout << "if total >= 0.99" << endl;
-			fullBoxes.push_back(queue.peekFront());
-			queue.dequeue();
-		}
-		cout << "loooooooop" << endl;
+			cout << "\n\nExceeded heap capacity\n" << endl;
 	}
-
-	cout << "Print all full boxes" << endl;
-	printVector(fullBoxes);
-	cout << endl;
-
-	cout << "Print all boxes waiting to be filled" << endl;
-	//printQueue
-	cout << endl;
-
-	endProgram(0);
-    return 0;
-}
-
-void getData(vector<topicEData>& list)
-{
-	int curBoxNumber = (int)time(0);
-
-	ifstream inFile;
-	string name{ "TopicEin.txt" };
-	inFile.clear();
-	inFile.open(name);
-	if (!inFile)
+	catch (PrecondViolatedExcep &pve)
 	{
-		cout << "Error opening " << name << endl
-			<< "Please select another file." << endl
-			<< endl;
-		do
-		{
-			cout << "Enter input file name:  ";
-			cin >> name;
-			inFile.clear();
-			inFile.open(name.c_str());
-
-			if (!inFile)
-			{
-				cout << name << " cannot be opened.\n";
-			}
-		} while (!inFile);
-		cin.ignore();
+		cout << pve.what() << endl;
 	}
 
-	while (!inFile.eof())//!empty
-	{
-		std::unique_ptr<topicEData> input = std::make_unique<topicEData>(++curBoxNumber);
-		inFile >> *input;
-		if (valid(*input))
-			list.push_back(*input);
-	}
+	cout << endl << "Program Over" << endl << endl;
 
-	inFile.close();
-	//validate
-}
-
-bool valid(topicEData testMe)
-{
-	topicEData zero(0), one(1);
-	one.add(1);
-	return (testMe > zero) && (testMe <= one);
-}
-
-template<class ItemType>
-void printVector(vector<ItemType>& list)
-{
-	for (size_t i = 0; i < list.size(); i++)
-		cout << list[i] << endl;
-	cout << "Vector conatins " << list.size() << " items." << endl
-		<< endl;
-}
-
-void endProgram(const int reason)
-{
-	//Inspired by the same named function written by Prof.
-	//It's functionally the exact same function
-	cout << endl
-		 << endl
-		 << "Program ending ";
-	cout << ((reason == 0) ? "successfully." : "unexpectantly due to error(s)!") << endl;
-	cout << endl
-		 << "Press Enter to end";
+	cin.ignore( cin.rdbuf()->in_avail() );
+	cout << "Press Enter to end -->  ";
 	cin.ignore();
-	exit(reason);
-}//end endProgram
+
+	return 0;
+}
+
+
+bool readFile( deque<double> &data, deque<double> &error  )
+{
+	
+	string fileName{ "TopicEin.txt" };
+	ifstream infile( fileName );
+	double d;
+
+	while ( !infile )
+	{
+		cout << "Cannot open file " << fileName << endl;
+		infile.clear();
+		cout << "Please enter a file name for input:  " << flush;
+		cin >> fileName;
+		infile.open( fileName );
+	} 
+
+	while ( infile >> d )
+	{
+		if ( d > 0 && d <= 1.0 )
+			data.push_back( d );
+		else
+			error.push_back( d );
+	}
+
+	infile.close();
+
+	if ( data.size() != 0 )
+		return true;
+	else
+		return false;
+}
+
+
+bool doBoxes( deque<double> & data, Heap_PriorityQueue<TopicEData> & pq, deque<TopicEData> &result, int & sum )
+{
+	vector<TopicEData> overload;
+	int i, limit = static_cast<int>( data.size() );
+	unsigned int j;
+	TopicEData l6d;
+	bool OK, ret{ true };
+
+	for ( i = 0; ret && i < limit; ++i )
+	{
+		OK = false;
+		while ( !OK )  // while the weight has not been boxed
+		{
+			if ( ( !pq.isEmpty() ) )  // look at the root of the pq by removing it
+			{
+				l6d = pq.peek();  // look at the root of the pq
+				pq.remove( );  //  remove it
+
+				if ( l6d + data.at( i ) <= LOAD )  // check to see if the box can hold the load
+				{
+					l6d.add( data.at( i ) );  // put the load in the box
+					// since having exactly the LOAD is not likely, will get close to it
+					if ( l6d >= LOAD - .01 )  // if the box has reached its limit put it somewhere else since it cannot hold any more
+					{
+						sum += l6d.getTotItems();  // accumulate number of items from "full" boxes
+						result.push_back( l6d );
+					}
+					else
+					{
+						pq.add( l6d );  // re-insert into heap
+					}
+					OK = true;
+				}
+				else  // box cannot hold the weight
+				{
+					overload.push_back( l6d );  // put it into a temporary holding vector
+				}
+			}
+			else // pq is empty - but unused boxes may be available
+			{
+				l6d = TopicEData( data.at( i ) );  // get the weight from the dequeue and create a new box object
+
+				if ( l6d >= LOAD - .01 )  // if the box is already at its limit put it somewhere else since it cannot hold any more
+				{
+					sum += l6d.getTotItems();  // accumulate number of items from "full" boxes
+					result.push_back( l6d );
+				}
+				else  // insert new box into the pq
+				{
+					if ( !pq.add( l6d ) )  // put the new box into the pq
+						ret = false;  // Exceeded capacity of heap
+				}
+			
+				OK = true;  // handled load
+			}
+		}
+
+		if ( overload.size() > 0 )  // once the current weight is boxed, put back the nodes in the temporary holding vector
+		{
+			for  ( j = 0; j < overload.size(); ++j )
+				pq.add( overload.at( j ) );
+
+			overload.clear();  // vector is empty after each iteration
+		}
+	}
+
+	return ret;
+}
+
+
+void displayResults( Heap_PriorityQueue<TopicEData> &pq, const deque<TopicEData> &result, int & sum )
+{
+	if ( result.size() > 0 )
+	{
+		cout << "Boxes which are considered to be full:\n";
+		ostream_iterator<TopicEData> screen( cout, "\n" );
+		copy( result.begin(), result.end(), screen );
+	}
+
+	cout << endl << "There are " << result.size() << " boxes considered to be full" << endl 
+		 << "\nBoxes still in the heap:" << endl;
+
+	TopicEData l6d;
+	int i = 1;
+
+	int heapTotal = 0;
+	size_t total = result.size();
+
+	while ( !pq.isEmpty()  )
+	{
+		l6d = pq.peek();
+		pq.remove();
+		cout << i << ".  " << l6d << endl;
+		sum += l6d.getTotItems();
+		++heapTotal;
+
+		++i;
+	}
+
+	cout << endl << "There are " << heapTotal << " boxes in the heap\n" << endl;
+	cout << total + heapTotal << " is the total number of boxes " << endl;
+	cout << sum << " is the total number of items " << endl;
+}
+
+	
+
+
+
+
 

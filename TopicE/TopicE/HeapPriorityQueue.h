@@ -1,68 +1,76 @@
-/** ADT priority queue: Heap-based implimentation.
-@file HeapPriorityQueue.h */
-#ifndef HEAP_PRIORITY_QUEUE_
-#define HEAP_PRIORITY_QUEUE_
+/**************************************************************
+CS M20 Topic E Project
+
+Modified by Martin Chetlen
+*************************************************************/
+
+/** ADT priority queue: Heap-based implementation.
+    Listing 17-3.
+ @file Heap_PriorityQueue.h */
+
+
+#ifndef _HEAP_PRIORITY_QUEUE
+#define _HEAP_PRIORITY_QUEUE
+
 #include "ArrayMaxHeap.h"
-//#include "PriorityQueueInterface.h"
 
 template<class ItemType>
-class HeapPriorityQueue : private ArrayMaxHeap<ItemType>//, public PriorityQueueInterface<ItemType>
+class Heap_PriorityQueue : private ArrayMaxHeap<ItemType>
 {
 public:
-	HeapPriorityQueue();
-	HeapPriorityQueue(const int maxsize);
-	bool isEmpty() const;
-	bool enqueue(const ItemType& newEntry);
-	bool dequeue();
+   Heap_PriorityQueue( int = ArrayMaxHeap<ItemType>::DEFAULT_CAPACITY);
+   bool isEmpty() const;
+   bool add(const ItemType& newEntry);
+   bool remove();
+   
+   /** @pre The priority queue is not empty. */
+   ItemType peek() const throw(PrecondViolatedExcep);
+}; // end Heap_PriorityQueue
 
-	/** @pre The priority queue is not empty. */
-	ItemType peekFront() const throw(PrecondViolatedExcept);
-}; // end HeapPriorityQueue
+// Modified for CS M20 Topic E Project
 
-/** Heap-Based implimentation of the ADT priority queue.
-@file HeapPriorityQueue.cpp */
+/** Heap-based implementation of the ADT priority queue.
+    Listing 17-4.
+ @file Heap_PriorityQueue.cpp */
 
-template<class ItemType>
-HeapPriorityQueue<ItemType>::HeapPriorityQueue()
-{
-	ArrayMaxHeap<ItemType>();
-} // end constructor
 
 template<class ItemType>
-HeapPriorityQueue<ItemType>::HeapPriorityQueue(const int maxsize)
+Heap_PriorityQueue<ItemType>::Heap_PriorityQueue( int cap ) : ArrayMaxHeap<ItemType>( cap )  // Modified
 {
-	ArrayMaxHeap<ItemType>::ArrayMaxHeap(maxsize);
-} // end constructor
+
+}  // end constructor
 
 template<class ItemType>
-bool HeapPriorityQueue<ItemType>::isEmpty() const
+bool Heap_PriorityQueue<ItemType>::isEmpty() const
 {
-	return ArrayMaxHeap<ItemType>::isEmpty();
-} // end isEmpty
+   return ArrayMaxHeap<ItemType>::isEmpty();
+}  // end isEmpty
 
 template<class ItemType>
-bool HeapPriorityQueue<ItemType>::enqueue(const ItemType& newEntry)
+bool Heap_PriorityQueue<ItemType>::add(const ItemType& newEntry)
 {
-	return ArrayMaxHeap<ItemType>::add(newEntry);
-} // end enqueue
+   return ArrayMaxHeap<ItemType>::add(newEntry);
+}  // end add
 
 template<class ItemType>
-bool HeapPriorityQueue<ItemType>::dequeue()
+bool Heap_PriorityQueue<ItemType>::remove()
 {
-	return ArrayMaxHeap<ItemType>::remove();
-} // end dequeue
+   return ArrayMaxHeap<ItemType>::remove();
+}  // end remove
 
 template<class ItemType>
-ItemType HeapPriorityQueue<ItemType>::peekFront() const throw(PrecondViolatedExcept)
+ItemType Heap_PriorityQueue<ItemType>::peek() const throw(PrecondViolatedExcep)
 {
-	try
-	{
-		return ArrayMaxHeap<ItemType>::peekTop();
-	}
-	catch (PrecondViolatedExcept e)
-	{
-		throw PrecondViolatedExcept("Attempted peek into an empty priority queue.");
-	} // end try/catch
-} // end peekFront
+   try
+   {
+      return ArrayMaxHeap<ItemType>::peekTop();
+   }
+   catch (PrecondViolatedExcep e)
+   {
+      throw PrecondViolatedExcep("Attempted peek into an empty priority queue.");
+   }  // end try/catch
+}  // end peek
+
+
 
 #endif

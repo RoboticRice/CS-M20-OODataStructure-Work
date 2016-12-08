@@ -1,90 +1,45 @@
-#include "TopicEData.h"
+/***************************************************************
+	CS M20 Topic E Project - Heaps
+	Fall 2014
+	Martin Chetlen
+*********************************************************************/
 
-topicEData::topicEData()
+
+
+#include "TopicEdata.h"
+
+int TopicEData::lastSeqNum = 0;
+
+// every TopicEData object generates a sequence number, including those not put into the queue.  
+TopicEData::TopicEData(double load) : seqNum{ ++lastSeqNum }, totLoad{ 0 }
 {
-	seqNum = 0;
-	totLoad = 0;
+	if ( load != 0 )
+		add( load );
 }
 
-topicEData::topicEData(int numbered)
-{
-	seqNum = numbered;
-	totLoad = 0;
-}
 
-void topicEData::setNumber(int number)
+void TopicEData::add( double load )
 {
-	seqNum = number;
+	totLoad += load;
+	loads.push_back( load );
 }
+	
 
-void topicEData::add(double amount)
+ostream & operator << ( ostream & out, const TopicEData & val )
 {
-	loads.push_back(amount);
-	totLoad += amount;
-}
+	if ( val.totLoad == 0 )
+	{
+		out << "Box " << val.seqNum << " has no load" << endl;
+		return out;
+	}
 
-double topicEData::getTotal() const
-{
-	return totLoad;
-}
+	out << "For box " << val.seqNum << ", Total Items:  " << val.loads.size() << ", Total Load:  " 
+		<< val.totLoad << ", consisting of " << flush;
 
-int topicEData::getNumber() const
-{
-	return seqNum;
-}
-
-int topicEData::getNumLoads() const
-{
-	return (int)loads.size();
-}
-
-std::vector<double> topicEData::getAllLoads() const
-{
-	return loads;
-}
-
-bool topicEData::operator == (const topicEData & right) const
-{
-	if (totLoad == right.totLoad)
-		return true;
-	return false;
-}
-
-bool topicEData::operator <= (const topicEData & right) const
-{
-	if (totLoad <= right.totLoad)
-		return true;
-	return false;
-}
-
-bool topicEData::operator > (const topicEData & right) const
-{
-	if (totLoad > right.totLoad)
-		return true;
-	return false;
-}
-
-std::ostream &operator << (std::ostream & out, const topicEData & val)
-{
-	out << "Box#: " << val.getNumber() << ". Total items: " << val.getNumLoads() << ", Total load: " << val.getTotal() << ", consisting of";
-	for (int i = 0; i < val.getNumLoads(); i++)
-		out << " " << val.getAllLoads().at(i);
+	for ( unsigned int i = 0; i < val.loads.size(); ++i )
+		out << val.loads.at( i ) << " " << flush;
 
 	return out;
 }
 
-std::istream &operator >> (std::istream &in, topicEData &val)
-{
-	double iBuf;
 
-	//getline(in, buf);
-	//val.setComposer(buf);
-
-	in >> iBuf;
-	//std::cout << "DB::iBuf::" << iBuf << std::endl;
-	val.add(iBuf);
-
-	in.get();  // why is this here?
-
-	return in;
-}

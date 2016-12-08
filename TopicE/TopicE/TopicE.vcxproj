@@ -146,20 +146,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
     <Text Include="TopicEin.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArrayMaxHeap.h" />
     <ClInclude Include="HeapInterface.h" />
     <ClInclude Include="HeapPriorityQueue.h" />
-    <ClInclude Include="PrecondViolatedExcept.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="PrecondViolatedExcep.h" />
     <ClInclude Include="TopicEData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="PrecondViolatedExcep.cpp" />
     <ClCompile Include="TopicE.cpp" />
     <ClCompile Include="TopicEData.cpp" />
   </ItemGroup>
