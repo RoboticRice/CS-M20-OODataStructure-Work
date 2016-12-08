@@ -1,251 +1,213 @@
-// TopicE.cpp : Defines the entry point for the console application.
-// #include "stdafx.h"
+/**************************************************************
+Topic F Project - CS M20
 
-/*
-* Project: TopicF
-* Class:   CS M20
-* Student: Rice, Sammuel D.
-* Edited:  20161114
-* Due on:  20161116
-* Version: 1.0 (History: 0.1)
-* VCS:     Not hosted atm
-* Status:
-Complete:		Yes
-Compiles:		Yes
-Errors:			No
-Created via:	VisualStudio 2015
-*/
+AVL Tree
+
+Client File
+****************************************************************/
 
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include "AVL.h"
-#include "Soundtrack.h"
+
 using namespace std;
 
-bool readFile(vector<soundtrack> &);
-void trailingBlanks(string & val);
-template<class TYPE>
-void printer(TYPE& i);
-void print1950s(soundtrack& i);
-void programWait();
-void endProgram(const int reason);
+#include "AVL.h"
+#include "Soundtrack.h"
+
+void display( FilmScore fs );  // Used as functon pointers
+void all1950( FilmScore fs );
+
+bool getInput( AvlTree<FilmScore> &av );
+
+
 
 int main()
 {
-	//This was taken from the Topic D Source Code, and modified for this project
-	vector<soundtrack> trackVec;
-	cout << "\n\nReading values from input file..." << endl;
-	if (!readFile(trackVec))
+	AvlTree<FilmScore> av;
+
+	cout << "Create and populate AVL tree\n" << endl;
+
+	if ( getInput( av ) )
 	{
-		cout << "\n\n\nNo values in input file.";
+		cout << "\n************************************ Press Enter to continue  -->  ";
 		cin.ignore();
-		endProgram(1);  // some non-zero value
+
+		cout << "Get item with key \"FSMBox 03 Disc 8\":" << endl;  // <-- Look at this as there were no records
+
+		FilmScore fs1{ "FSM", "Box 03 Disc 8" }, FS;
+
+		if ( av.AVL_Retrieve( fs1, FS ) )
+			cout << FS << endl;
+		else
+			cout << "\nNo items found with key \"FSMBox 03 Disc 8\"\n" << endl; 
+
+		cout << "\n\nGet item with key \"FSMBox 07 Disc 8\":" << endl ;
+
+		FilmScore fs2{ "FSM", "Box 07 Disc 8" };
+
+		if ( av.AVL_Retrieve( fs2, FS ) )
+			cout << FS << endl;
+		else
+			cout << "\nNo items found with key \"FSMBox 07 Disc 8\"\n" << endl; 
+
+		cout << "\n************************************ Press Enter to continue  -->  ";
+		cin.ignore();
+
+		cout << "Listing of all items in the tree: (There are " << av.AVL_Count()
+				<< " items in the table) \n" << endl;
+
+		av.AVL_Traverse( display );
+
+		cout << "\n************************************ Press Enter to continue  -->  ";
+		cin.ignore();
+
+		cout << "\n\nList all soundtracks recorded in the 1950s:\n" << endl;
+		av.AVL_Traverse( all1950 );
+		cout << "\n************************************ Press Enter to continue  -->  ";
+		cin.ignore();
+
+
+		cout << "\nDelete all items with key \"FSM V8N11\":" << endl;
+
+		FilmScore fs3{ "FSM", "V8N11" };
+
+		if ( av.AVL_Retrieve( fs3, FS ) )
+		{
+		
+			cout << "\n" << FS << endl;
+			av.AVL_Delete( fs3 );
+			cout <<  "has been deleted" << endl;
+		}
+		else
+			cout << "NO items for \"FSM V8N11\"" << endl;
+
+		cout << "\nAgain delete all items with key \"FSM V8N11\":" << endl;
+
+		if ( av.AVL_Retrieve( fs3, FS ) )
+		{
+		
+			cout << "\n" << FS << endl;
+			av.AVL_Delete( fs3 );
+			cout <<  "has been deleted" << endl;
+		}
+		else
+			cout << "NO items for \"FSM V8N11\"" << endl;
+
+		cout << "\n************************************ Press Enter to continue  -->  ";
+		cin.ignore();
+
+		cout << "Listing of all items in the tree: (There are " << av.AVL_Count()
+				<< " items in the table) \n" << endl;
+
+		av.AVL_Traverse( display );
 	}
 
-	//I personally like this so I know what was actually accepted, but I removed it since it's not in the sample exe
-	//cout << "\nDisplaying content read from file:" << endl;
-	//for (size_t i{ 0 }; i < trackVec.size(); ++i)
-	//	cout << trackVec.at(i);
-	//cout << endl << endl;
+	cout << "\nProgram Ending\n\nPress Enter to end -->  ";
+	cin.ignore();
 
-	//Start of my code
-	cout << endl << "Creating an AVL, and populating it with input content..." << endl;
-	AvlTree<soundtrack> myAvlTree;
-	for (size_t i{ 0 }; i < trackVec.size(); ++i)
-		myAvlTree.AVL_Insert(trackVec.at(i));
-	
-	//myAvlTree.AVL_Print(); //Do you not like their print code? I noticed you didn't use it in the sample exe
-	programWait();
+	return 0;
+}
 
-	soundtrack key;
-	key.setLabel("FSM");
-	key.setCat_Num("Box 03 Disc 8");
-	cout << "Get item with key \"" << key.getLabel() << " " << key.getCat_Num() << "\":" << endl;
-	if (myAvlTree.AVL_Retrieve(key, key))
-		cout << "Found item with key in AVL." << endl;
-	else 
-		cout << "Did NOT find any items with key in AVL." << endl;
-	cout << endl << endl;
-
-	key.setCat_Num("Box 07 Disc 8");
-	cout << "Get item with key \"" << key.getLabel() << " " << key.getCat_Num() << "\":" << endl;
-	if (myAvlTree.AVL_Retrieve(key, key))
-		cout << "Found item with key in AVL." << endl;
-	else
-		cout << "Did NOT find any items with key in AVL." << endl;
-	cout << endl;
-
-	programWait();
-
-	cout << "Listing of all items in the tree: (There are " << myAvlTree.AVL_Count() << " items in the table)" << endl << endl;
-	//myAvlTree.AVL_Print();
-	myAvlTree.AVL_Traverse(printer);
-
-	programWait();
-
-	cout << "Listing of all recordings from the 1950s:" << endl << endl;
-	//myAvlTree.AVL_Print();
-	myAvlTree.AVL_Traverse(print1950s);
-
-	programWait();
-
-	//key.setLabel("FSM"); //already set
-	key.setCat_Num("V8N11");
-	cout << "Get item with key \"" << key.getLabel() << " " << key.getCat_Num() << "\":" << endl;
-	if (myAvlTree.AVL_Retrieve(key, key) && myAvlTree.AVL_Delete(key))
-		cout << "Found following item with key in AVL, and deleting:" << endl << key << endl;
-	else
-		cout << "Did NOT find any items with key in AVL." << endl;
-	//This is done in two steps: 1) Find the item, 2) Delete the item. The steps are seperate b/c delete does not return the soundtrack item being deleted, but find does.
-	cout << endl << endl;
-
-	//key.setLabel("FSM"); //already set
-	//key.setCat_Num("V8N11"); //already set
-	cout << "Get item with key \"" << key.getLabel() << " " << key.getCat_Num() << "\":" << endl;
-	if (myAvlTree.AVL_Retrieve(key, key) && myAvlTree.AVL_Delete(key))
-		cout << "Found following item with key in AVL, and deleting:" << endl << key << endl;
-	else
-		cout << "Did NOT find any items with key in AVL." << endl;
-	//This is done in two steps: 1) Find the item, 2) Delete the item. The steps are seperate b/c delete does not return the soundtrack item being deleted, but find does.
-	cout << endl;
-
-	programWait();
-
-	cout << "Listing of all items in the tree: (There are " << myAvlTree.AVL_Count() << " items in the table)" << endl << endl;
-	//myAvlTree.AVL_Print();
-	myAvlTree.AVL_Traverse(printer);
-
-	endProgram(0);
-    return 0;
-} // end main
-
-bool readFile(vector<soundtrack> & trackVec)
+void delTrailBlanks( string & str )
 {
-	bool rc = true;
+	int pos = str.length() - 1;
 
-	string filename("Topic F Soundtrack.txt");
-	ifstream inFile(filename);
+	for ( ; pos >= 0 && isspace( str[ pos ] ); --pos )
+		;
 
-	while (!inFile)
+	if ( pos < 0 )
+		str = "";
+	else
+		if ( pos != str.length() - 1 )
+			str.erase( pos + 1 );
+}
+
+bool getInput( AvlTree<FilmScore> &av )
+{
+	// File layout of input file
+	const int FIELDS[] = { 24, 40, 16, 24, 8, 4 };
+	const int NUM_FIELDS = 6;
+
+	ifstream in( "Topic F Soundtrack.txt" );
+
+	if ( !in )
 	{
-		cout << filename << " cannot be opened.  Enter another file name -->  ";
-		cin >> filename;
-		cin.ignore();  // get rid of newline after filename entry
-		inFile.clear();
-		inFile.open(filename);
+		cout << "Cannot open soundtrack.txt" << endl;
+		return false;
 	}
 
-	soundtrack st;
-	string buf, sub;
-	char *endPtr;  // for strtol
+	string line, data[ 6 ];
 
-	bool duplicate = false;
-	while (!inFile.eof())
+	int strPos, // position in input string line
+		dataFieldPos; // element of data array - input to FilmScore class AND element of FIELDS array
+
+	unsigned int year;
+
+	char *remain;  // for strtol
+
+	FilmScore FS, fs;
+
+	while ( !in.eof() )
 	{
-		st.clear();
+		getline( in, line );
 
-		getline(inFile, buf);
+		for ( dataFieldPos = strPos = 0; 
+// starting position in line + (offset - 1) must be less than line length && more record fields to be processed
+			  strPos + FIELDS[ dataFieldPos ] - 1 < static_cast<int>( line.length() ) && dataFieldPos < NUM_FIELDS; 
+			  strPos += FIELDS[ dataFieldPos++ ] )  // move strPos to start of next field
+		{
+			data[ dataFieldPos ] = line.substr( strPos, FIELDS[ dataFieldPos ] );
+			delTrailBlanks( data[ dataFieldPos ] );
+		}
+		
+		if ( dataFieldPos != NUM_FIELDS )
+		{  // record processing stopped before all fields were processed
+			cout << endl << line << " has a problem.  Input record is ignored" << endl;
+			continue;  // go on to next input record
+		}
 
-		sub = buf.substr(0, 24);
-		trailingBlanks(sub);
-		st.setComposer(sub);
+		year = strtol( data[ 5 ].c_str(), &remain, 0 );
 
-		sub = buf.substr(24, 40);
-		trailingBlanks(sub);
-		st.setTitle(sub);
-
-		sub = buf.substr(64, 16);
-		trailingBlanks(sub);
-		st.setLabel(sub);
-
-		sub = buf.substr(80, 24);
-		trailingBlanks(sub);
-		st.setCat_Num(sub);
-
-		sub = buf.substr(104, 8);
-		trailingBlanks(sub);
-		st.setRecorded(sub);
-
-		sub = buf.substr(112, 4);
-		st.setReleased(static_cast<int>(strtol(sub.c_str(), &endPtr, 10)));
-
-		if (st.getReleased() == 0)
-			cout << "Error: \"" << sub << "\" is not a valid number for Released Year. The following input is being ignored:" << endl << st << endl;
+		if ( strlen( remain ) != 0 )
+			cout << endl << data[ 5 ] << " is not a numeric value.  This input ignored:\n"
+			     << line << endl; 
 		else
 		{
-			duplicate = false;
-			size_t i{ 0 };
-			while (!duplicate && i < trackVec.size())
-			{
-				if (trackVec.at(i) == st)
-					duplicate = true;
-				i++;
-			}
-			//for (size_t i{ 0 }; i < trackVec.size(); ++i)
-				//duplicate = duplicate || ((trackVec.at(i)==st) ? true : false); //This does seem inefficient...
-			if (!duplicate)
-				trackVec.push_back(st);
+			FS = FilmScore( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], 
+			           data[ 4 ], year ); 
+
+			if ( !( av.AVL_Retrieve( FS, fs ) ) )
+				av.AVL_Insert( FS );
 			else
-				cout << "Error: The following input is a duplicate and will be ignored:" << endl << st << endl;
-		}
+				cout << FS << " is a duplicate" << endl;
+		}		
 	}
 
-	if (trackVec.empty())
-		rc = false;
+	in.close();
 
-	inFile.close();
-
-	return rc;
+	if ( av.AVL_Count() == 0 )
+		return false;
+	else
+		return true;
 }
 
-void trailingBlanks(string & val)
+void display( FilmScore fs )
 {
-	int i;
+	static int count = 0;
+	
+	cout << fs << endl;
 
-	for (i = static_cast<int>(val.length()) - 1; isspace(val[i]); --i)  // What assumption is being made here?
-		;
-
-	val.erase(i + 1);
+	if ( ++count % 75 == 0 )
+	{
+		cout << "\n************************************ Press Enter to continue -->  ";
+		cin.ignore();
+	}
 }
 
-template<class TYPE>
-void printer(TYPE& i)
+void all1950( FilmScore fs )
 {
-	cout << i << endl;
+	if ( fs.getRecordYr().find( "195" ) != string::npos || fs.getRecordYr().find( "/5" ) != string::npos )
+		cout << fs << endl;
 }
 
-void print1950s(soundtrack& i) //specific for 1950s
-{
-	string item = i.getRecorded();
-	if (item.empty() || item.length() < 4)
-		;
-	else if (item.at(0) == '1' &&  item.at(1) == '9' && item.at(2) == '5')
-		cout << i << endl;
-}
 
-void programWait()
-{
-	cout << endl
-		<< endl
-		<< "***************************************************************";
-	cout << endl
-		<< "Press Enter to continue --> ";
-	cin.ignore();
-	cout << endl
-		<< endl;
-}
-
-void endProgram(const int reason)
-{
-	//Inspired by the same named function written by Prof.
-	//It's functionally the exact same function
-	cout << endl
-		<< endl
-		<< "Program ending ";
-	cout << ((reason == 0) ? "successfully." : "unexpectantly due to error(s)!") << endl;
-	cout << endl
-		<< "Press Enter to end";
-	cin.ignore();
-	exit(reason);
-} // end endProgram

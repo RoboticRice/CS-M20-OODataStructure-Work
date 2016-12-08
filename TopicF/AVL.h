@@ -1,13 +1,3 @@
-/*************************************************************
-Topic F Project - CS M20
-
-AVL Tree
-
-AVL Class File
-
-Revised by Martin Chetlen    Fall 2016
-****************************************************************/
-
 /*	AVL Tree Library.
 	Written by: G & F
 	Date:       2/98
@@ -19,106 +9,89 @@ Revised by Martin Chetlen    Fall 2016
 	Copyright(c) 2001. All Rights Reserved
 */
 
-//	==================== const declarations ====================  <-- change from macros
-const int LH = 1;     // Left High 
-const int EH = 0;     // Even High 
-const int RH = -1;     // Right High 
+//	==================== MACROS ====================
+#define LH +1     // Left High 
+#define EH  0     // Even High 
+#define RH -1     // Right High 
 
-#include <iostream>  // <-- add
-#include <stdexcept>
-#include <memory>    // <-- add
-#include <iomanip>   // <-- add
-using namespace std;
-
-// forward declaration  <-- 
+// 	NODE Definitions
 template <class TYPE> 
-class AvlTree;
-
-// 	AVL_NODE Definitions
-template <class TYPE> 
-class AVL_NODE		// change to a class and change class name  <--
+struct NODE 
 	{
-	  friend AvlTree<TYPE>;  // make the tree class a friend  <--
-
-	private:
-	 TYPE		data;
-	 shared_ptr<AVL_NODE<TYPE>> left;  // change to a smart pointer
-	 int		bal;
-	 shared_ptr<AVL_NODE<TYPE>> right;  // here too
-
-	 AVL_NODE(const AVL_NODE<TYPE> & right) = delete;  // <--
-		 AVL_NODE & operator = (const AVL_NODE<TYPE> & right) = delete;  // <--
-
-	public:
-		AVL_NODE() : left{ nullptr }, right{ nullptr }, bal{ EH } {};  // added in default constructor  <--
-		TYPE getData() const { return data; }
-
-	} ; // AVL_NODE
+	 TYPE    data;
+	 NODE   *left;
+	 int     bal;
+	 NODE   *right;
+	} ; // NODE
 
 // Class Declaration
-// All references to KTYPE and data.key deleted  <--
-// All raw pointers changed to shared_ptr
-
-template <class TYPE> 
+template <class TYPE, class KTYPE> 
 class AvlTree
 	{
 	 private: 
 	    int          count;
-		shared_ptr<AVL_NODE<TYPE>>  tree;
+	    NODE<TYPE>  *tree;
 
-		shared_ptr<AVL_NODE<TYPE>> _insert		   (shared_ptr<AVL_NODE<TYPE>> root,
-													shared_ptr<AVL_NODE<TYPE>> newPtr,
-													bool&       taller);
+	    NODE<TYPE> *_insert          (NODE<TYPE>  *root, 
+                                      NODE<TYPE>  *newPtr, 
+	                                  bool&       taller);
 
-		shared_ptr<AVL_NODE<TYPE>> leftBalance      (shared_ptr<AVL_NODE<TYPE>> root,
-													 bool&        taller);
+	    NODE<TYPE>  *leftBalance     (NODE<TYPE>  *root, 
+	                                  bool&        taller);
 
-		shared_ptr<AVL_NODE<TYPE>> rotateLeft      (shared_ptr<AVL_NODE<TYPE>> root);
-		shared_ptr<AVL_NODE<TYPE>> rightBalance    (shared_ptr<AVL_NODE<TYPE>> root,
-													bool&        taller);
-		shared_ptr<AVL_NODE<TYPE>> rotateRight     (shared_ptr<AVL_NODE<TYPE>> root);
-		shared_ptr<AVL_NODE<TYPE>> _delete         (shared_ptr<AVL_NODE<TYPE>> root,
-													TYPE        dltKey,
-													bool&        shorter,
-													bool&        success);
+	    NODE<TYPE>  *rotateLeft      (NODE<TYPE>  *root);
+	    NODE<TYPE>  *rightBalance    (NODE<TYPE>  *root, 
+	                                  bool&        taller);
+	    NODE<TYPE>  *rotateRight     (NODE<TYPE>  *root);
+	    NODE<TYPE> *_delete          (NODE<TYPE>  *root, 
+	                                  KTYPE        dltKey,
+	                                  bool&        shorter,
+	                                  bool&        success);
 
-		shared_ptr<AVL_NODE<TYPE>> dltLeftBalance  (shared_ptr<AVL_NODE<TYPE>> root,
-													bool&        smaller);
-		shared_ptr<AVL_NODE<TYPE>> dltRightBalance (shared_ptr<AVL_NODE<TYPE>> root,
-													bool&        shorter);
-		shared_ptr<AVL_NODE<TYPE>> _retrieve        (TYPE        key,
-													 shared_ptr<AVL_NODE<TYPE>> root) const;
+	    NODE<TYPE>  *dltLeftBalance  (NODE<TYPE>  *root,
+	                                  bool&        smaller);
+	    NODE<TYPE>  *dltRightBalance (NODE<TYPE>  *root, 
+	                                  bool&        shorter);
+	    NODE<TYPE> *_retrieve        (KTYPE        key, 
+	                                  NODE<TYPE>  *root);
 	                                  
-	    void  _traversal  (void process(TYPE dataProc),
-						   shared_ptr<AVL_NODE<TYPE>> root);
+	    void  _traversal  (void (*process)(TYPE dataProc),
+	                              NODE<TYPE>    *root); 
 
-	    void  _destroyAVL (shared_ptr<AVL_NODE<TYPE>> root);
-
-// add in under private  Why?  <--
-		AvlTree(const AvlTree<TYPE> & right) = delete;
-		// What does this imply?
-
-		AvlTree<TYPE> & operator = (const AvlTree<TYPE> & right) = delete;  // What does this imply?
+	    void  _destroyAVL (NODE<TYPE>  *root);
 
 //  	The following function is used for debugging.
-	    void  _print      (shared_ptr<AVL_NODE<TYPE>> root, int   level) const;
+	    void  _print      (NODE<TYPE> *root, int   level);
 
 	 public:
-		 AvlTree() : tree{ nullptr }, count{ 0 } {}
-	     ~AvlTree  (); 
+	          AvlTree (void);
+	         ~AvlTree  (void); 
 	    bool  AVL_Insert   (TYPE   dataIn); 
-	    bool  AVL_Delete   (TYPE  dltKey);
-	    bool  AVL_Retrieve (TYPE  key,     TYPE& dataOut) const;
-	    void  AVL_Traverse (void process(TYPE  dataProc));
+	    bool  AVL_Delete   (KTYPE  dltKey);
+	    bool  AVL_Retrieve (KTYPE  key,     TYPE& dataOut);
+	    void  AVL_Traverse (void (*process)(TYPE  dataProc));
 
-	    bool  AVL_Empty    (void) const;
-
-	    int   AVL_Count    (void) const;
+	    bool  AVL_Empty    (void);
+	    bool  AVL_Full     (void);
+	    int   AVL_Count    (void);
 	    
 //      The following function is used for debugging.
-	    void  AVL_Print    (void) const;
+	    void  AVL_Print    (void);
 	} ; // class AvlTree
 	
+/*	=================== Constructor ===================	
+	Initializes private data.
+	   Pre     class is being defined
+	   Post    private data initialized
+*/
+
+template <class TYPE, class KTYPE>
+AvlTree<TYPE, KTYPE> ::  AvlTree (void) 
+{
+//	Statements 
+	tree    = NULL;
+	count   = 0;
+}	//  Constructor
 
 /*	==================== AVL_Insert ==================== 
 	This function inserts new data into the tree.
@@ -127,19 +100,19 @@ class AvlTree
 	   Return success (true) or overflow (false)
 */
 
-template <class TYPE>
-bool   AvlTree<TYPE> :: AVL_Insert (TYPE dataIn) 
+template <class TYPE, class KTYPE>
+bool   AvlTree<TYPE, KTYPE> :: AVL_Insert (TYPE dataIn) 
 {
 //	Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> newPtr;
+	NODE<TYPE>  *newPtr;
 	bool         taller;
 
 //	Statements 
-	newPtr = make_shared<AVL_NODE<TYPE>>();  // call default constructor
-// These are done in the AVL_NODE constructor
-//	newPtr->bal    = EH;
-//	newPtr->right  = NULL;
-//	newPtr->left   = NULL;
+	if (!(newPtr = new NODE<TYPE>))
+	   return false;
+	newPtr->bal    = EH;
+	newPtr->right  = NULL;
+	newPtr->left   = NULL;
 	newPtr->data   = dataIn;
    
 	tree = _insert(tree, newPtr, taller);
@@ -149,18 +122,17 @@ bool   AvlTree<TYPE> :: AVL_Insert (TYPE dataIn)
 
 /*	======================= _insert =======================
 	This function uses recursion to insert the new data into 
-	a leaf AVL_NODE in the AVL tree.
+	a leaf node in the AVL tree.
 	   Pre    application has called AVL_Insert, which passes 
 	          root and data pointers
 	   Post   data have been inserted
 	   Return pointer to [potentially] new root
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-         ::  _insert (shared_ptr<AVL_NODE<TYPE>> root,
-					  shared_ptr<AVL_NODE<TYPE>> newPtr,
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+         ::  _insert (NODE<TYPE>  *root, 
+                      NODE<TYPE>  *newPtr, 
                       bool&        taller)
 {
 //	Statements   
@@ -171,7 +143,7 @@ shared_ptr<AVL_NODE<TYPE>>
 	    return  root;
 	   } //  if NULL tree 
  
-	if (newPtr->data < root->data)
+	if (newPtr->data.key < root->data.key)
 	   {
 	    root->left = _insert(root->left, 
 	                         newPtr, 
@@ -193,7 +165,7 @@ shared_ptr<AVL_NODE<TYPE>>
 	                    taller    = false;
 	                    break;
 	          } // switch 
-	   } //  new < AVL_NODE 
+	   } //  new < node 
 	else 
 	   //  new data >= root data 
 	   {
@@ -229,15 +201,14 @@ shared_ptr<AVL_NODE<TYPE>>
 	   Returns potentially new root 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-         :: leftBalance (shared_ptr<AVL_NODE<TYPE>> root,
+template <class TYPE, class KTYPE>
+NODE<TYPE>  *AvlTree<TYPE,  KTYPE> 
+         :: leftBalance (NODE<TYPE>  *root, 
                          bool&        taller) 
 {
 // 	Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> rightTree;
-	shared_ptr<AVL_NODE<TYPE>> leftTree;
+	NODE<TYPE>  *rightTree;
+	NODE<TYPE>  *leftTree;
 
 //	Statements 
 	leftTree = root->left;
@@ -252,7 +223,8 @@ shared_ptr<AVL_NODE<TYPE>>
 	                taller   = false;
 	             break;
 	    case EH: // This is an error 
-	                throw  logic_error( "Error occurred in AVLTree leftBalance" ); // <--
+	                cout <<"\n\a\aError in leftBalance\n";
+	                exit (100); 
 	    case RH: // Right High - Requires double rotation: 
 	             // first left, then right 
 	                rightTree = leftTree->right;
@@ -284,19 +256,18 @@ shared_ptr<AVL_NODE<TYPE>>
 	This function exchanges pointers so as to rotate the  
 	tree to the left.
 	   Pre  root points to tree to be rotated 
-	   Post AVL_NODE rotated and new root returned 
+	   Post NODE rotated and new root returned 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-          :: rotateLeft (shared_ptr<AVL_NODE<TYPE>>  root)
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+          :: rotateLeft (NODE<TYPE>  *root) 
 {
 //	Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> tempPtr { root->right };
+	NODE<TYPE>  *tempPtr;
 
 //	Statements 
-       
+	tempPtr        = root->right;
 	root->right    = tempPtr->left;
 	tempPtr->left  = root;
 
@@ -307,19 +278,18 @@ shared_ptr<AVL_NODE<TYPE>>
 	This function exchanges pointers to rotate the tree
 	to the right.
 	   Pre   root points to tree to be rotated 
-	   Post  AVL_NODE rotated and new root returned 
+	   Post  NODE rotated and new root returned 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-          :: rotateRight (shared_ptr<AVL_NODE<TYPE>> root)
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+          :: rotateRight (NODE<TYPE> *root) 
 {
 //	Local Definitions 
-	auto tempPtr{ root->left };
+	NODE<TYPE>  *tempPtr;
 
 //	Statements 
-
+	tempPtr         = root->left;
 	root->left      = tempPtr->right;
 	tempPtr->right  = root;
 
@@ -334,15 +304,14 @@ shared_ptr<AVL_NODE<TYPE>>
 	   Returns potentially new root 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-         :: rightBalance (shared_ptr<AVL_NODE<TYPE>> root, bool& taller)
+template <class TYPE, class KTYPE>
+NODE<TYPE>* AvlTree<TYPE, KTYPE> 
+         :: rightBalance (NODE<TYPE> *root, bool& taller) 
 {
 
 //	Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> rightTree;
-	shared_ptr<AVL_NODE<TYPE>> leftTree;
+	NODE<TYPE> *rightTree;
+	NODE<TYPE> *leftTree;
  
 //	Statements 
 	rightTree = root->right;
@@ -374,7 +343,7 @@ shared_ptr<AVL_NODE<TYPE>>
 	                taller        = false;
 	                break;
 
-	     case EH: // Deleting from balanced AVL_NODE 
+	     case EH: // Deleting from balanced node 
 				     root->bal = EH;
 	                 taller    = false;
 	                 break;
@@ -390,22 +359,22 @@ shared_ptr<AVL_NODE<TYPE>>
 }	//  rightBalance   
 
 /*	====================== AVL_Delete ====================== 
-	This function deletes a AVL_NODE from the tree and rebalances 
+	This function deletes a node from the tree and rebalances 
 	it if necessary. 
 	   Pre    dltKey contains key to be deleted
-	   Post   the AVL_NODE is deleted and its space recycled
+	   Post   the node is deleted and its space recycled
 	          -or- an error code is returned 
 	   Return success (true) or not found (false)
 */
 
-template <class TYPE>
-bool  AvlTree <TYPE> :: AVL_Delete (TYPE  dltKey)
+template <class TYPE, class KTYPE>
+bool  AvlTree <TYPE, KTYPE> :: AVL_Delete (KTYPE  dltKey)
 {
 //	Local Definitions 
 	bool shorter;
 	bool success;
 
-	shared_ptr<AVL_NODE<TYPE>> newRoot;
+	NODE<TYPE>  *newRoot;
 
 //	Statements 
 	newRoot = _delete (tree, dltKey, shorter, success);
@@ -418,45 +387,44 @@ bool  AvlTree <TYPE> :: AVL_Delete (TYPE  dltKey)
 }	// AVL_Delete
 
 /*	======================== _delete ======================= 
-	This function deletes a AVL_NODE from the tree and rebalances 
+	This function deletes a node from the tree and rebalances 
 	it if necessary. 
-	   Pre    dltKey contains key of AVL_NODE to be deleted
+	   Pre    dltKey contains key of node to be deleted
 	          shorter is Boolean indicating tree is shorter
-	   Post   the AVL_NODE is deleted and its space recycled
+	   Post   the node is deleted and its space recycled
 	          -or- if key not found, tree is unchanged 
 	   Return true if deleted, false if not found
 	          pointer to root
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-          :: _delete (shared_ptr<AVL_NODE<TYPE>> root,
-                      TYPE       dltKey,
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+          :: _delete (NODE<TYPE> *root, 
+                      KTYPE       dltKey,
                       bool&       shorter,
                       bool&       success) 
 {
 //  Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> dltPtr;
-	shared_ptr<AVL_NODE<TYPE>> exchPtr;
-	shared_ptr<AVL_NODE<TYPE>> newRoot;
+	NODE<TYPE> *dltPtr;
+	NODE<TYPE> *exchPtr;
+	NODE<TYPE> *newRoot;
 
 // 	Statements 
 	if (!root)
 	   {
 	    shorter = false;
 	    success = false;
-	    return nullptr;
+	    return NULL;
 	   } //  if -- base case 
 	
-	if (dltKey < root->data)
+	if (dltKey < root->data.key)
 	    {
 	     root->left = _delete (root->left, dltKey, 
 	                           shorter,    success);
 	     if (shorter)
 	         root   = dltRightBalance (root, shorter);
 	    } // if less 
-	else if (dltKey > root->data)
+	else if (dltKey > root->data.key)
 	    {
 	     root->right = _delete (root->right, dltKey,
 	                            shorter,     success);
@@ -464,7 +432,7 @@ shared_ptr<AVL_NODE<TYPE>>
 	         root = dltLeftBalance (root, shorter);
 	    } //  if greater 
 	else
-	    //  Found equal AVL_NODE 
+	    //  Found equal node 
 	    {
 	     dltPtr  = root;
 	     if (!root->right)
@@ -473,7 +441,7 @@ shared_ptr<AVL_NODE<TYPE>>
 	          newRoot  = root->left;
 	          success  = true;
 	          shorter  = true;
-	          dltPtr.reset();
+	          delete (dltPtr);
 	          return newRoot;            //  base case 
 	         } //  if true 
 	     else
@@ -483,11 +451,11 @@ shared_ptr<AVL_NODE<TYPE>>
 	              newRoot  = root->right;
 	              success  = true;
 	              shorter  = true;
-	              dltPtr.reset();
+	              delete (dltPtr);
 	              return newRoot;        // base case 
 	            } //  if 
 	         else
-	             //  Delete AVL_NODE has two subtrees 
+	             //  Delete NODE has two subtrees 
 	             {
 	              exchPtr = root->left;
 	              while (exchPtr->right)
@@ -495,14 +463,14 @@ shared_ptr<AVL_NODE<TYPE>>
 	                  
 	              root->data = exchPtr->data;
 	              root->left = _delete (root->left, 
-	                                    exchPtr->data,
+	                                    exchPtr->data.key,
 	                                    shorter, 
 	                                    success); 
 	              if (shorter)
 	                  root = dltRightBalance (root, shorter); 
 	             } //  else 
 	
-	    } // equal AVL_NODE 
+	    } // equal node 
 	return root; 
 }	// _delete 
 
@@ -514,15 +482,14 @@ shared_ptr<AVL_NODE<TYPE>>
 	   Returns potentially new root 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-	AvlTree<TYPE> 
-        ::  dltLeftBalance  (shared_ptr<AVL_NODE<TYPE>> root,
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+        ::  dltLeftBalance  (NODE<TYPE>  *root,
                              bool&        smaller) 
 {
 //	Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> rightTree;
-	shared_ptr<AVL_NODE<TYPE>> leftTree;
+	NODE<TYPE>  *rightTree;
+	NODE<TYPE>  *leftTree;
   	 
 //	Statements 
 	switch (root->bal)
@@ -588,15 +555,14 @@ shared_ptr<AVL_NODE<TYPE>>
 	   Returns potentially new root 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-		AvlTree<TYPE> 
-         ::  dltRightBalance (shared_ptr<AVL_NODE<TYPE>> root,
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE,  KTYPE> 
+         ::  dltRightBalance (NODE<TYPE>  *root, 
                               bool&        shorter) 
 {
 //  Local Definitions 
-	shared_ptr<AVL_NODE<TYPE>> rightTree;
-	shared_ptr<AVL_NODE<TYPE>> leftTree;
+	NODE<TYPE>  *rightTree;
+	NODE<TYPE>  *leftTree;
 	
 //	Statements
 	switch (root->bal)
@@ -655,19 +621,19 @@ shared_ptr<AVL_NODE<TYPE>>
 }	//  dltRightBalance 
 
 /*	==================== AVL_Retrieve ===================  
-	Retrieve AVL_NODE searches the tree for the AVL_NODE containing 
+	Retrieve node searches the tree for the node containing 
 	the requested key and returns pointer to its data.
 	   Pre     dataOut is variable to receive data
 	   Post    tree searched and data returned
 	   Return  true if found, false if not found
 */
 
-template <class TYPE>
-bool   AvlTree<TYPE> 
-   ::  AVL_Retrieve  (TYPE   key, TYPE& dataOut) const
+template <class TYPE, class KTYPE>
+bool   AvlTree<TYPE, KTYPE> 
+   ::  AVL_Retrieve  (KTYPE   key, TYPE& dataOut)
 {
 //	Local Definitions
-	shared_ptr<AVL_NODE<TYPE>> node;
+	NODE<TYPE> *node;
 	
 //	Statements 
 	if (!tree)
@@ -684,26 +650,25 @@ bool   AvlTree<TYPE>
 }	//  AVL_Retrieve 
 
 /*	===================== _retrieve ===================== 
-	Retrieve searches tree for AVL_NODE containing requested 
+	Retrieve searches tree for node containing requested 
 	key and returns its data to the calling function.
 	   Pre     AVL_Retrieve called: passes key to be located 
 	   Post    tree searched and data pointer returned 
-	   Return  address of matching AVL_NODE returned 
+	   Return  address of matching node returned 
 	           if not found, NULL returned 
 */
 
-template <class TYPE>
-shared_ptr<AVL_NODE<TYPE>>
-	AvlTree<TYPE> 
-        ::  _retrieve (TYPE       key, 
-			shared_ptr<AVL_NODE<TYPE>> root) const
+template <class TYPE, class KTYPE>
+NODE<TYPE>*  AvlTree<TYPE, KTYPE> 
+        ::  _retrieve (KTYPE       key, 
+                       NODE<TYPE> *root)
 {
 //	Statements 
 	if (root)
 	    {
-	     if (key < root->data)
+	     if (key < root->data.key)
 	         return _retrieve (key, root->left);
-	     else if (key > root->data)
+	     else if (key > root->data.key)
 	         return _retrieve (key, root->right);
 	     else
 	         // Found equal key 
@@ -716,13 +681,13 @@ shared_ptr<AVL_NODE<TYPE>>
 
 /*	==================== AVL_Traverse ==================== 
 	Process tree using inorder traversal. 
-	   Pre   process used to "visit" AVL_NODEs during traversal 
-	   Post  all AVL_NODEs processed in LNR (inorder) sequence 
+	   Pre   process used to "visit" nodes during traversal 
+	   Post  all nodes processed in LNR (inorder) sequence 
 */
 
-template <class TYPE>
-void  AvlTree<TYPE> 
-  ::  AVL_Traverse (void process(TYPE dataProc))
+template <class TYPE, class KTYPE>
+void  AvlTree<TYPE, KTYPE> 
+  ::  AVL_Traverse (void (*process)(TYPE dataProc))
 {
 //	Statements 
 	_traversal (process, tree);
@@ -731,15 +696,15 @@ void  AvlTree<TYPE>
 
 /*	===================== _traversal ===================== 
 	Traverse tree using inorder traversal. To process a
-	AVL_NODE, we use the function passed when traversal is called.
+	node, we use the function passed when traversal is called.
 	   Pre   tree has been created (may be null) 
-	   Post  all AVL_NODEs processed 
+	   Post  all nodes processed 
 */
 
-template <class TYPE>
-void  AvlTree<TYPE> 
-  ::  _traversal (void process(TYPE dataproc),
-				  shared_ptr<AVL_NODE<TYPE>> root)
+template <class TYPE, class KTYPE>
+void  AvlTree<TYPE, KTYPE> 
+  ::  _traversal (void(*process)(TYPE dataproc),
+                  NODE<TYPE> *root)
 {
 //	Statements 
 	if (root)
@@ -757,22 +722,44 @@ void  AvlTree<TYPE>
 	   Returns  true if tree empty, false if any data 
 */
 
-template <class TYPE>
-bool   AvlTree<TYPE> ::  AVL_Empty (void) const
+template <class TYPE, class KTYPE>
+bool   AvlTree<TYPE, KTYPE> ::  AVL_Empty (void)
 {
 //	Statements 
 	return (count == 0);
 }	//  AVL_Empty 
 
+/*	=================== AVL_Full =================== 
+	If there is no room for another node, returns true.
+	   Pre      tree has been created
+	   Returns  true if no room, false if room 
+*/
+
+template <class TYPE, class KTYPE>
+bool   AvlTree<TYPE, KTYPE> ::  AVL_Full (void)
+{
+//	Local Definitions 
+	NODE<TYPE>  *newPtr;
+	
+//	Statements 
+	newPtr = new NODE<TYPE>;
+	if (newPtr)
+	   {
+	    delete  newPtr;
+	    return false;
+	   } // if
+	else
+	   return true;
+}	//  AVL_Full 
 
 /*	=================== AVL_Count ===================
-	Returns number of AVL_NODEs in tree.
+	Returns number of nodes in tree.
 	   Pre     tree has been created
 	   Returns tree count 
 */
 
-template <class TYPE>
-int  AvlTree<TYPE> ::  AVL_Count (void) const
+template <class TYPE, class KTYPE>
+int  AvlTree<TYPE, KTYPE> ::  AVL_Count (void)
 {
 // 	Statements 
 	return (count);
@@ -780,14 +767,14 @@ int  AvlTree<TYPE> ::  AVL_Count (void) const
 
 /*	=================== Destructor =================== 
 	Deletes all data in tree and recycles memory.
-	The AVL_NODEs are deleted by calling a recursive
+	The nodes are deleted by calling a recursive
 	function to traverse the tree in inorder sequence.
 	   Pre      tree is a pointer to a valid tree 
 	   Post     all data have been deleted 
 */
 
-template <class TYPE>
-AvlTree<TYPE> :: ~AvlTree  (void) 
+template <class TYPE, class KTYPE>
+AvlTree<TYPE, KTYPE> :: ~AvlTree  (void) 
 {
 //	Statements 
 	if (tree)
@@ -796,22 +783,22 @@ AvlTree<TYPE> :: ~AvlTree  (void)
 
 /*	=================== _destroyAVL =================== 
 	Deletes all data in tree and recycles memory.
-	The AVL_NODEs are deleted by calling a recursive
+	The nodes are deleted by calling a recursive
 	function to traverse the tree in postorder sequence.   
 	   Pre   tree is being destroyed 
 	   Post  all data have been deleted 
 */
 
-template <class TYPE>
-void  AvlTree<TYPE> 
-  ::  _destroyAVL (shared_ptr<AVL_NODE<TYPE>> root)
+template <class TYPE, class KTYPE>
+void  AvlTree<TYPE, KTYPE> 
+  ::  _destroyAVL (NODE<TYPE>  *root)
 {
 //	Statements 
 	if (root)
 	   {
 	    _destroyAVL (root->left);
 	    _destroyAVL (root->right);
-		root.reset();
+	    delete root;
 	   } // if 
 	return;
 }	//  _destroyAVL
@@ -824,11 +811,11 @@ void  AvlTree<TYPE>
 	To correctly visualize the tree when turned sideways, the actual 
 	traversal is RNL.
 	Pre	 Tree must be initialized. Null tree is OK.
-		 Level is AVL_NODE level: root == 0
+		 Level is node level: root == 0
 	Post Tree has been printed.
 */
-template <class TYPE>
-void  AvlTree<TYPE> :: AVL_Print (void) const
+template <class TYPE, class KTYPE>
+void  AvlTree<TYPE, KTYPE> :: AVL_Print (void) 
 {
 /*  statements */
     _print (tree, 0);
@@ -842,14 +829,14 @@ void  AvlTree<TYPE> :: AVL_Print (void) const
 */
 
 /*  This function uses recursion to print the tree. At each level, the 
-    level number is printed along with the AVL_NODE contents (an integer).
+    level number is printed along with the node contents (an integer).
     Pre		root is the root of a tree or subtree
             level is the level of the tree: tree root is 0
     Post    Tree has been printed.
 */
-template <class TYPE>
-void  AvlTree<TYPE> ::  _print (shared_ptr<AVL_NODE<TYPE>> root,
-                                       int         level) const
+template <class TYPE, class KTYPE>
+void  AvlTree<TYPE, KTYPE> ::  _print (NODE<TYPE> *root,
+                                       int         level) 
 {
  /* Local Definitions */
  	int i;
@@ -864,7 +851,7 @@ void  AvlTree<TYPE> ::  _print (shared_ptr<AVL_NODE<TYPE>> root,
 
  		 for (i = 0; i <= level; i++ )
  		 	cout << "....";
-  		 cout << setw(3) << root->data;
+  		 cout << setw(3) << root->data.key;
   		 if (root->bal == LH)
   		    cout << " (LH)\n";
   		 else if (root->bal == RH)

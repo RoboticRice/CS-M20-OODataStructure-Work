@@ -1,61 +1,57 @@
-/*************************************
-	CS M20 Topic F Project
-	Rice, Sammuel
-**********************************/
+/*************************************************************************
+	CS M20
 
-#include <iomanip>
+	AVL Tree Project - Topic F
+
+	FilmScore.h
+
+	This class will hold the data read in from the input file
+
+	The ID of each object is the combination of the label and the catalog number
+	Because this constitutes the ID, these objects are const.
+	As a result, these values are required therefore there is no default constructor
+*******************************************************************************/
+
+
 #include <iostream>
-#include <fstream>
 #include <string>
 
 using namespace std;
 
-class soundtrack  
+class FilmScore
 {
 public:
-	soundtrack(string composer = "", string title = "", string label = "", string cat_num = "", 
-				string recorded = "1900", int released = 1900) 
-				: 
-				composer(composer), title(title), label(label), cat_num(cat_num),
-				recorded(recorded), released(released) {}
+	FilmScore() : composer{ "" }, film{ "" }, label{ " " }, catNum{ " " }, recordYr{ "" },
+		releaseYr{ 1900 } {}
+	FilmScore(string label, string catNum) : label{ label }, catNum{ catNum } {}
+	FilmScore( string & composer, string & film, string & label, string & catNum, string & recordYr,
+		       unsigned int & releaseYr ) 
+		: composer{ composer }, film{ film }, label{ label }, catNum{ catNum }, recordYr{ recordYr },
+		  releaseYr{ releaseYr } {}
+
+	string ID() const { return label + catNum; }  // extract the ID
 
 	string getComposer() const { return composer; }
-	string getTitle()    const { return title; }
-	string getLabel()    const { return label;  }
-	string getCat_Num()  const { return cat_num; }
-	string getRecorded() const { return recorded; }
-	int    getReleased() const { return released; }
+	string getFilm() const { return film; }
+	string getLabel() const { return label; }
+	string getCatNum() const { return catNum; }
+	string getRecordYr() const { return recordYr; }
+	unsigned int getReleaseYr() const { return releaseYr; }
 
-	void setComposer( string comp )  { composer = comp; }
-	void setTitle   ( string name )  { title = name; }
-	void setLabel   ( string Label ) { label = Label; }
-	void setCat_Num ( string cat )   { cat_num = cat; }
-	void setRecorded( string rec )   { recorded = rec; }
-	void setReleased( int rel )      { released = rel; }
+	void setComposer( string & comp ) { composer = comp; }
+	void setFilm( string & f ) { film = f; }
+	void setRecordYr( string & ryr ) { recordYr = ryr; }
+	void setReleaseYr( unsigned int ry ) { releaseYr = ry; }
 
-	void clear() { 
-		composer = "";
-		title = "";
-		label = "";
-		cat_num = "";
-		recorded = "1900";
-		released = 1900;
-	}
-
-	bool operator == (const soundtrack & right) const;
-
-	bool operator < (const soundtrack & right) const;
-	bool operator > (const soundtrack & right) const;
+	bool operator == ( const FilmScore & right ) const { return ( ID() == right.ID() ); }
+	bool operator != ( const FilmScore & right ) const { return ( ID() != right.ID() ); }
+	bool operator > ( const FilmScore & right ) const { return ( ID() > right.ID() ); }
+	bool operator < ( const FilmScore & right ) const { return ( ID() < right.ID() ); }
 
 private:
-	string composer;
-	string title;
-	string label;
-	string cat_num;
-	string recorded;
-	int released;
+	string composer, film, recordYr;
+	unsigned int releaseYr;
+	string label, catNum;
 };
 
-ostream &operator << (ostream & out, const soundtrack & val);
-istream &operator >> (istream &in, soundtrack &val);
-
+ostream & operator << ( ostream & out, const FilmScore fm );
