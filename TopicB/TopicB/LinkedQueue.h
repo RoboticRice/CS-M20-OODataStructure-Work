@@ -1,217 +1,152 @@
-/** ADT queue: Link-based implimentationn.
-@file LinkedQueue.h */
 
-#ifndef LINKED_QUEUE_
-#define LINKED_QUEUE_
 
-//#include "QueueInterface.h"
+/** ADT queue: Link-based implementation.
+ Listing 14-3.
+ @file LinkedQueue.h */
+
+/**********************************
+	Topic B Project - Balanced symbols
+
+	CS M20
+
+	Modified to include:
+		* Assignment operator
+		* Implementations for:
+			* Constructor
+			* Destructor
+			* Copy constructor
+			* isEmpty
+			* peekFront
+		* C++ 11
+
+	Exclude queue interface
+***********************************/
+
+
+#ifndef _LINKED_QUEUE
+#define _LINKED_QUEUE
+
+#include <memory>
+using namespace std;
+
 #include "Node.h"
 #include "PrecondViolatedExcept.h"
-#include <memory>
 
 template<class ItemType>
-class LinkedQueue //: public QueueInterface<ItemType>
+class LinkedQueue
 {
 private:
-	// The queue is implimented as a chain of linked nodes that has
-	// two external pointers, a head pointer for the front of the queue
-	// and a tail pointer for the back of the queue.
-	std::shared_ptr<Node<ItemType>> frontPtr;
-	std::shared_ptr<Node<ItemType>> backPtr;
+   // The queue is implemented as a chain of linked nodes that has 
+   // two external pointers, a head pointer for front of the queue and
+   // a tail pointer for the back of the queue.
+	shared_ptr<Node<ItemType>>  backPtr;
+	shared_ptr<Node<ItemType>>  frontPtr;
 
 public:
-	LinkedQueue();
-	LinkedQueue(const LinkedQueue& aQueue);
-	~LinkedQueue();
+	LinkedQueue() {}  //changed
+    LinkedQueue  (const LinkedQueue& aQueue);
+   ~LinkedQueue();
 
-	bool isEmpty() const;
+    bool isEmpty() const { return ( ( frontPtr == nullptr ) ? true : false );  }  //modified
 	bool enqueue(const ItemType& newEntry);
 	bool dequeue();
+   
+   /** @throw PrecondViolatedExcep if the queue is empty */
+	ItemType peekFront() const throw(PrecondViolatedExcept);
 
-	/** @throw PrecondViolatedExcept if the queue is empty */
-	ItemType peekFront() const throw (PrecondViolatedExcept);
+	LinkedQueue<ItemType> & operator = ( const LinkedQueue<ItemType> &right );  //added
 
-	LinkedQueue<ItemType> & operator = (const LinkedQueue<ItemType> & aQueue);
 }; // end LinkedQueue
 
-//#include "LinkedQueue.cpp"
-//********Start of .cpp file**********
-
-template<class ItemType>
-LinkedQueue<ItemType>::LinkedQueue() : frontPtr(nullptr), backPtr(nullptr)
-{
-} //end default constructor
-
-template<class ItemType>
-LinkedQueue<ItemType>::LinkedQueue(const LinkedQueue<ItemType>& aQueue)
-{
-	//Point to nodes in original chain
-	std::shared_ptr<Node<ItemType>> originalChainPtr = aQueue.frontPtr;
-	if (originalChainPtr == nullptr)
-	{
-		backPtr = nullptr; //Original Stack is empty
-		frontPtr = nullptr;
-	}
-	else
-	{
-		//Copy first node
-		frontPtr = std::make_shared<Node<ItemType>>(originalChainPtr->getItem());
-		//frontPtr = new Node<ItemType>();
-		//frontPtr->setItem(originalChainPtr->getItem());
-
-		//point to first node in new chain
-		std::shared_ptr<Node<ItemType>> newChainPtr = frontPtr;
-
-		//Update backPtr
-		backPtr = newChainPtr;
-
-		//Advance original-chain pointer
-		originalChainPtr = originalChainPtr->getNext();
-
-		//Copy remaining nodes
-		while (originalChainPtr != nullptr)
-		{
-			//get next item from original chain
-			ItemType nextItem = originalChainPtr->getItem();
-
-			//Create a new node containing the next item
-			auto newNodePtr = make_shared<Node<ItemType>>(nextItem);
-
-			//Link new node to end of new chain
-			newChainPtr->setNext(newNodePtr);
-
-			//Advance pointer to new last node
-			newChainPtr = newChainPtr->getNext();
-
-			//Update backPtr
-			backPtr = newChainPtr;
-
-			//Advance original-chain pointer
-			originalChainPtr = originalChainPtr->getNext();
-		}//end while
-		newChainPtr->setNext(nullptr); //Flag end of chain
-	}//end if
-}//end copy constructor
-
-template<class ItemType>
-LinkedQueue<ItemType>::~LinkedQueue()
-{
-	//Pop until stack is empty
-	while (!isEmpty())
-		dequeue();
-}//end destructor
-
-template<class ItemType>
-bool LinkedQueue<ItemType>::isEmpty() const
-{
-	return frontPtr == nullptr;
-} //end isEmpty
+/******************************** Implementation******************************/
 
 template<class ItemType>
 bool LinkedQueue<ItemType>::enqueue(const ItemType& newEntry)
 {
-	auto newNodePtr = std::make_shared<Node<ItemType>>(newEntry);
+	auto  newNodePtr{ make_shared<Node<ItemType>>(newEntry) };
 
-	//Insert the new node
-	if(isEmpty())
-		frontPtr = newNodePtr;			//The queue was empty
-	else
-		backPtr->setNext(newNodePtr);	//The queue was not empty
-
-	backPtr = newNodePtr;				//New node is at back
+   // Insert the new node
+   if (isEmpty())
+      frontPtr = newNodePtr;        // Insertion into empty queue
+   else
+      backPtr->setNext(newNodePtr); // Insertion into nonempty queue
+   
+   backPtr = newNodePtr;            // New node is at back
+   
 	return true;
-} // end enqueue
+}  // end enqueue
 
 template<class ItemType>
 bool LinkedQueue<ItemType>::dequeue()
 {
-	bool result = false;
+	bool result{ false };
 	if (!isEmpty())
 	{
-		// Queue is not empty; remove front
-		auto nodeToDeletePtr = frontPtr;
-		if (frontPtr == backPtr)
-		{   //Special case: one node in queue
-			//set frontPtr and backPtr to nullptr
-			frontPtr.reset();
-			backPtr.reset();
-		}
-		else
-			frontPtr = frontPtr->getNext();
-
-		//Maintain an accurate reference count for first node
-		nodeToDeletePtr->setNext(nullptr);
-		//Removed node will be deallocated when method ends
-
-		result = true;
-	} //end if
-
-	return result;
-} //end dequeue
+      // Queue is not empty; delete front
+		auto  nodeToDeletePtr{ frontPtr };
+      if (frontPtr == backPtr)
+      {  // Special case: one node in queue
+         frontPtr = backPtr = nullptr;
+      }
+      else
+		   frontPtr = frontPtr->getNext();
+		
+      result = true;
+	}  // end if
+   
+	return result;	
+}  // end dequeue
 
 template<class ItemType>
-ItemType LinkedQueue<ItemType>::peekFront() const throw (PrecondViolatedExcept)
+LinkedQueue<ItemType>::LinkedQueue  (const LinkedQueue& aQueue)
 {
-	if (isEmpty())
-	{
-		string message = "peekFront() called with an empty list";
-		throw(PrecondViolatedExcept(message));
-	}
+	backPtr = frontPtr = nullptr;
+	*this = aQueue; 
+}  // end copy constructor
+
+
+
+template<class ItemType>
+LinkedQueue<ItemType>::~LinkedQueue()
+{
+	backPtr.reset();
+	frontPtr.reset();
+}
+
+   /** @throw PrecondViolatedExcep if the queue is empty */
+template<class ItemType>  //added
+ItemType LinkedQueue<ItemType>::peekFront() const throw(PrecondViolatedExcept)
+{
+	if ( isEmpty() )
+		throw PrecondViolatedExcept( "peekFront - Queue empty" );
+		
 	return frontPtr->getItem();
-} //end peekFront
+}
 
-template<class ItemType>
-LinkedQueue<ItemType> & LinkedQueue<ItemType>::operator = (const LinkedQueue<ItemType> & aQueue)
+template<class ItemType>  //added
+LinkedQueue<ItemType> &  LinkedQueue<ItemType>::operator = ( const LinkedQueue<ItemType> &right )  //added
 {
-	if (this == &aQueue)
+	if ( this == &right )
 		return *this;
 
-	while (!isEmpty())
-		dequeue();
-	//frontPtr = nullptr; //<-Will happen automatically during dequeue
-	//backPtr = nullptr;
-	if (!aQueue.isEmpty())
+	frontPtr = backPtr = nullptr;
+
+	if ( right.frontPtr == nullptr )
 	{
-		//Point to nodes in original chain
-		std::shared_ptr<Node<ItemType>> originalChainPtr = aQueue.frontPtr;
-
-		//Copy first node
-		frontPtr = std::make_shared<Node<ItemType>>(originalChainPtr->getItem());
-		//frontPtr = new Node<ItemType>();
-		//frontPtr->setItem(originalChainPtr->getItem());
-
-		//point to first node in new chain
-		std::shared_ptr<Node<ItemType>> newChainPtr = frontPtr;
-
-		//Update backPtr
-		backPtr = newChainPtr;
-
-		//Advance original-chain pointer
-		originalChainPtr = originalChainPtr->getNext();
-
-		//Copy remaining nodes
-		while (originalChainPtr != nullptr)
-		{
-			//get next item from original chain
-			ItemType nextItem = originalChainPtr->getItem();
-
-			//Create a new node containing the next item
-			auto newNodePtr = make_shared<Node<ItemType>>(nextItem);
-
-			//Link new node to end of new chain
-			newChainPtr->setNext(newNodePtr);
-
-			//Advance pointer to new last node
-			newChainPtr = newChainPtr->getNext();
-
-			//Update backPtr
-			backPtr = newChainPtr;
-
-			//Advance original-chain pointer
-			originalChainPtr = originalChainPtr->getNext();
-		}//end while
-		newChainPtr->setNext(nullptr); //Flag end of chain
+		return *this;
 	}
+
+	auto curr{ right.frontPtr };
+
+	while ( curr != nullptr )
+	{
+		enqueue( curr->getItem() );
+		curr = curr->getNext();
+	}
+
 	return *this;
-} // end operator = overload
-#endif // !LINKED_QUEUE_
+}
+
+
+
+#endif

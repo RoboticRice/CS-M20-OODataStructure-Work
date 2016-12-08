@@ -1,186 +1,163 @@
-/** ADT stack: Linked-based implimentation.
-@file LinkedStack.h */
 
-#ifndef LINKED_STACK_
-#define LINKED_STACK_
+
+/** ADT stack: Link-based implementation.
+    Listing 7-3.
+    @file LinkedStack.h */
+
+/**********************************
+	Topic B Project - Balanced symbols
+
+	CS M20
+
+	Modified to include:
+		* Exceptions
+		* Assignment operator - move copy constructor code here
+		* Change to copy constructor
+		* C++ 11
+
+	Exclude stack interface
+***********************************/
+ 
+#ifndef _LINKED_STACK
+#define _LINKED_STACK
+
+#include <memory>
+using namespace std;
 
 #include "Node.h"
+#include "PrecondViolatedExcept.h"
 
 template<class ItemType>
 class LinkedStack
 {
 private:
-	std::shared_ptr<Node<ItemType>> topPtr; //Pointer to first node in the chain;
-											//this node contains the stack's top
+	shared_ptr<Node<ItemType>>  topPtr; // Pointer to first node in the chain;
+                           // this node contains the stack's top
 
 public:
-//Constructor and destructor:
-	LinkedStack();
-	LinkedStack(const LinkedStack<ItemType>& aStack);
-	virtual ~LinkedStack();
-
-//Stack operations:
+// Constructors and destructor:
+	LinkedStack() {}                                   // Default constructor
+   LinkedStack(const LinkedStack<ItemType>& aStack);// Copy constructor 
+	virtual ~LinkedStack();                          // Destructor
+	
+// Stack operations:
 	bool isEmpty() const;
-	bool push(const ItemType& newwItem);
-	bool pop();
-	ItemType peek() const;
+	bool push(const ItemType& newItem);
+	bool pop()  throw ( PrecondViolatedExcept );  //changed
+	ItemType peek() const throw ( PrecondViolatedExcept );  //changed
 
-	LinkedStack<ItemType> & operator = (const LinkedStack<ItemType> & aStack);
+	LinkedStack<ItemType> & operator = ( const LinkedStack<ItemType> &right );  //added
+
 }; // end LinkedStack
 
-//end of .h file, start of .cpp file
+/******************************** Implementation******************************/
+
 
 template<class ItemType>
-LinkedStack<ItemType>::LinkedStack() : topPtr(nullptr)
+LinkedStack<ItemType>::LinkedStack(const LinkedStack<ItemType>& aStack) : topPtr(nullptr)  //changed
 {
-} //end default constructor
+	*this = aStack;  //changed
+}  // end copy constructor
 
-template<class ItemType>
-LinkedStack<ItemType>::LinkedStack(const LinkedStack<ItemType>& aStack)
-{
-	//Point to nodes in original chain
-	std::shared_ptr<Node<ItemType>> originalChainPtr = aStack.topPtr;
-	if (originalChainPtr == nullptr)
-		topPtr = nullptr; //Original Stack is empty
-	else
-	{
-		//Copy first node
-		//topPtr = new Node<ItemType>();
-		//topPtr->setItem(originalChainPtr->getItem());
-		topPtr = std::make_shared<Node<ItemType>>(originalChainPtr->getItem());
-
-		//point to first node in new chain
-		std::shared_ptr<Node<ItemType>> newChainPtr = topPtr;
-
-		//Advance original-chain pointer
-		originalChainPtr = originalChainPtr->getNext();
-
-		//Copy remaining nodes
-		while (originalChainPtr != nullptr)
-		{
-			//get next item from original chain
-			ItemType nextItem = originalChainPtr->getItem();
-
-			//Create a new node containing the next item
-			//Node<ItemType>* newNodePtr = new Node<ItemType>(nextItem);
-			auto newNodePtr = make_shared<Node<ItemType>>(nextItem);
-
-			//Link new node to end of new chain
-			newChainPtr->setNext(newNodePtr);
-
-			//Advance pointer to new last node
-			newChainPtr = newChainPtr->getNext();
-
-			//Advance original-chain pointer
-			originalChainPtr = originalChainPtr->getNext();
-		}//end while
-		newChainPtr->setNext(nullptr); //Flag end of chain
-	}//end if
-}//end copy constructor
 
 template<class ItemType>
 LinkedStack<ItemType>::~LinkedStack()
 {
-	//Pop until stack is empty
-	while (!isEmpty())
-		pop();
-}//end destructor
-
-template<class ItemType>
-bool LinkedStack<ItemType>::push(const ItemType& newItem)
-{
-	auto newNodePtr = std::make_shared<Node<ItemType>>(newItem);
-	if (isEmpty())
-		topPtr = newNodePtr;
-	else
-	{
-		newNodePtr->setNext(topPtr);
-		topPtr = newNodePtr;
-	}
-	return true;
-} //end push
-
-template<class ItemType>
-bool LinkedStack<ItemType>::pop()
-{
-	bool result = false;
-	if (!isEmpty())
-	{
-		//Stack is not empty; delete top
-		//Node<ItemType>* nodeToDeletedPtr = topPtr;
-		topPtr = topPtr->getNext();
-
-		//return deleted node to system
-		//nodeToDeletedPtr->setNext(nullptr);
-		//delete nodeToDeletedPtr;
-		//nodeToDeletedPtr = nullptr;
-
-		result = true;
-	}//end if
-
-	return result;
-}//end pop
-
-template<class ItemType>
-ItemType LinkedStack<ItemType>::peek() const
-{
-	//assert(!isEmpty()); //Enforce precondition during debugging
-
-	//Stack is not emptty; return top
-	return topPtr->getItem();
-}//end peek
+	topPtr.reset();
+}  // end destructor
 
 template<class ItemType>
 bool LinkedStack<ItemType>::isEmpty() const
 {
 	return topPtr == nullptr;
-} //end ifEmpty
+}  // end isEmpty
 
 template<class ItemType>
-LinkedStack<ItemType> & LinkedStack<ItemType>::operator = (const LinkedStack<ItemType> & aStack)
+bool LinkedStack<ItemType>::push(const ItemType& newItem)
 {
-	if (this == &aStack)
+	auto newNodePtr = make_shared<Node<ItemType>>(newItem, topPtr);
+	topPtr = newNodePtr;
+   newNodePtr = nullptr;
+      
+	return true;
+}  // end push
+
+template<class ItemType>
+bool LinkedStack<ItemType>::pop()  throw ( PrecondViolatedExcept )  //Changed
+{
+	bool result = false;
+	if (!isEmpty())
+	{
+      // Stack is not empty; delete top
+		auto nodeToDeletePtr = topPtr;
+		topPtr = topPtr->getNext();
+		
+
+      result = true;
+	}  // end if
+	else
+		throw PrecondViolatedExcept( "pop called with empty stack" );
+   
+	return result;	
+}  // end pop
+
+template<class ItemType>	
+ItemType LinkedStack<ItemType>::peek() const  throw ( PrecondViolatedExcept )  //Changed
+{
+	if ( isEmpty() )
+		throw PrecondViolatedExcept( "peek called with empty stack" );
+
+	// Stack is not empty; return top
+	return topPtr->getItem();
+}  // end getTop
+
+template<class ItemType>
+LinkedStack<ItemType> & LinkedStack<ItemType>::operator = ( const LinkedStack<ItemType> &aStack )  //added
+{
+	if ( this == &aStack )
 		return *this;
 
-	while (!isEmpty())
-		pop();
+	topPtr = nullptr;
 
-	if (!aStack.isEmpty())
-	{
-		//Point to nodes in original chain
-		std::shared_ptr<Node<ItemType>> originalChainPtr = aStack.topPtr;
-		//Copy first node
-		//topPtr = new Node<ItemType>();
-		//topPtr->setItem(originalChainPtr->getItem());
-		topPtr = std::make_shared<Node<ItemType>>(originalChainPtr->getItem());
+    // Point to nodes in original chain
+   auto origChainPtr = aStack.topPtr;  //changed -> to .
+   
+   if (origChainPtr == nullptr)
+      topPtr = nullptr;  // Original bag is empty
+   else
+   {
+      // Copy first node
+      topPtr = make_shared<Node<ItemType>>();
+      topPtr->setItem(origChainPtr->getItem());
+      
+      // Point to last node in new chain
+      auto newChainPtr = topPtr;     
+      
+      // Copy remaining nodes
+      while (origChainPtr->getNext() != nullptr)  //changed - added ->getNext()
+      {
+         // Advance original-chain pointer
+         origChainPtr = origChainPtr->getNext(); 
+         
+         // Get next item from original chain
+         ItemType nextItem = origChainPtr->getItem();
+         
+         // Create a new node containing the next item 
+         auto newNodePtr = make_shared<Node<ItemType>>(nextItem);
+         
+         // Link new node to end of new chain
+         newChainPtr->setNext(newNodePtr); 
+         
+         // Advance pointer to new last node      
+         newChainPtr = newChainPtr->getNext();   
+      }  // end while
+      
+      newChainPtr->setNext(nullptr);           // Flag end of chain
+   }  // end if
 
-		//point to first node in new chain
-		std::shared_ptr<Node<ItemType>> newChainPtr = topPtr;
-
-		//Advance original-chain pointer
-		originalChainPtr = originalChainPtr->getNext();
-
-		//Copy remaining nodes
-		while (originalChainPtr != nullptr)
-		{
-			//get next item from original chain
-			ItemType nextItem = originalChainPtr->getItem();
-
-			//Create a new node containing the next item
-			//Node<ItemType>* newNodePtr = new Node<ItemType>(nextItem);
-			auto newNodePtr = make_shared<Node<ItemType>>(nextItem);
-
-			//Link new node to end of new chain
-			newChainPtr->setNext(newNodePtr);
-
-			//Advance pointer to new last node
-			newChainPtr = newChainPtr->getNext();
-
-			//Advance original-chain pointer
-			originalChainPtr = originalChainPtr->getNext();
-		}//end while
-		newChainPtr->setNext(nullptr); //Flag end of chain
-	}
-	return *this;
+   return *this;
 }
-#endif // !LINKED_STACK
+
+
+// End of implementation file.
+#endif

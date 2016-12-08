@@ -1,306 +1,210 @@
-// TopicA.cpp : Defines the entry point for the console application.
-//#include "stdafx.h"
+/********************************
+	Topic B Project Client File
+
+	CS M20  
+
+	Stack/queue project - Balanced symbols
+
+	Both basic and extra credit
+*********************************/
 
 #pragma warning( disable: 4290 )  // disable warnings about the use of throw in function headers
 
-#include <string>
+
 #include <iostream>
 #include <fstream>
-#include "LinkedQueue.h"
-#include "LinkedStack.h"
+#include <string>
+
 using namespace std;
 
-/*
-* Project: TopicB
-* Class:   CS M20
-* Student: Rice, Sammuel D.
-* Edited:  20160914
-* Due on:  20160914
-* Version: 1.0 (History: 0.1)
-* VCS:     Not hosted atm
-* Status:
-	ExtraCredit:	Yes
-	Complete:		Yes
-	Compiles:		Yes
-	Errors:			No
-	Created via:	VisualStudio 2015
-*/
+#include "LinkedQueue.h"
+#include "LinkedStack.h"
 
-/**
-1>------ Build started: Project: TopicB, Configuration: Debug Win32 ------
-1>  TopicB.cpp
-1>  TopicB.vcxproj -> C:\Users\Samous\Source\Repos\CS-M20-OODataStructure-Work\TopicB\Debug\TopicB.exe
-1>  TopicB.vcxproj -> C:\Users\Samous\Source\Repos\CS-M20-OODataStructure-Work\TopicB\Debug\TopicB.pdb (Full PDB)
-========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
-**/
-
-string displayQueue(LinkedQueue<string> &aQueue);
-bool addToStack(LinkedStack<char> &aStack, const string line);
-string displayStack(LinkedStack<char> &aStack);
-bool isValid(const string &aString);
-void endProgram(const int reason);
+void getInput( LinkedQueue<string> &lq );
+bool validExp( const string &exp );
 
 int main()
 {
-	/*const*/ string fileName{ "TopicB.txt" };
-	/*Added this section after looking at Prof.'s example .exe*/
-	cout << "Enter input file name: ";
-	cin >> fileName;
-	/*The instructions state: The input file is TopicB.txt - which implies
-	  there is only one input file, and it will always be called TopicB.txt,
-	  but after looking at the .exe I changed the program to allow user input*/
-	cout << "Searching for input file: " << fileName << endl;
-	ifstream inFile;
-	inFile.open(fileName, ios::in);
-	if (!inFile)
-	{
-		cout << "ERROR_1 :: Unable to open file" << endl;
-		endProgram(1); // terminate with error
-	}
-
-	cout << "File opened successfully." << endl
-		 << endl
-		 << "Reading contents into LinkedQueue lq." << endl;
-
-	string line{ "" };
+	cout << "Create queue object lq\n" << endl;
 	LinkedQueue<string> lq;
-	while (!inFile.eof())
-	{
-		getline(inFile, line);
-		lq.enqueue(line);
-	}
-	if (lq.isEmpty())
-	{
-		cout << "ERROR_2 :: Queue is empty. Either the file was empty or could not be read!" << endl;
-		endProgram(2); // terminate with error
-	}
+
+	cout << "Get the file input\n" << endl;
+
+	getInput( lq );
 	
-	cout << "Contents read into lq." << endl
-		 << endl
-		 << "Creating lq1 as a copy of lq." << endl;
-	LinkedQueue<string> lq1(lq);
+	cout << "\n\nAfter getting the file nput,  test other functions*******\nCreate lq1, a copy of the queue" << endl;
+	LinkedQueue<string> lq1 = lq;
+	cout << "\nDisplay the contents of the copy queue lq1:" << endl;
+	while( !( lq1.isEmpty() ) )
+	{
+		cout << lq1.peekFront() << endl;
+		lq1.dequeue();
+	}
 
-	cout << "Displaying contents of lq1 (the copy):" << endl
-		 << endl;
-	cout << displayQueue(lq1) << endl
-		 << endl;
-
-	cout << "Attempting to Peek at lq1 (now empty)..." << endl;
-	try 
+	cout << "\nAttempt to peek the now empty copy queue lq1:" << endl;
+	try
 	{
 		lq1.peekFront();
 	}
-	catch (PrecondViolatedExcept& e)
+	catch( PrecondViolatedExcept &exc )
 	{
-		cerr << e.what();
-		cout << endl;
-		//endProgram(3); // terminate with error
+		cout << exc.what();
 	}
-	cout << endl; //extra spacer
 	
-	cout << "Assigning lq to lq1." << endl;
+	cout << "\n\nAssign lq to lq1 and then display lq1:" << endl;
 	lq1 = lq;
-	cout << "Displaying contents of lq1 (the copy):" << endl
-		 << endl;
-	cout << displayQueue(lq1) << endl
-		 << endl;
 
-	cout << "Placing the first line (string) into a stack (of chars) called ls1." << endl;
-	LinkedStack<char> ls1;
-	if (!addToStack(ls1, lq.peekFront()))
+	while( !( lq1.isEmpty() ) )
 	{
-		//Failed!
-		cout << "ERROR_3 :: AddToStack() Failed!" << endl;
-		endProgram(3); // terminate with error
+		cout << lq1.peekFront() << endl;
+		lq1.dequeue();
 	}
 
-	cout << "Creating copy of ls1 called ls2." << endl;
-	LinkedStack<char> ls2(ls1);
-	cout << "Displaying contents of ls2 (the copy):" << endl
-		 << endl;
-	cout << displayStack(ls2) << endl
-		 << endl;
+	cout << "\nPut the first string in lq into a stack of chars, ls1" << endl;
+	LinkedStack<char> ls1;
+	string exp = lq.peekFront();
+	for( size_t i = 0; i < exp.size(); ++i )
+		ls1.push( exp[ i ] );
 
-	cout << "Assigning ls1 to ls2 (ls2=ls1;)." << endl;
-	ls2=ls1;
-	cout << "Displaying contents of ls2 (the copy):" << endl
-		 << endl;
-	cout << displayStack(ls2) << endl
-		 << endl;
-
-	/****Begin Condition Checking****/
-	cout << endl
-		 << endl
-		 << "Begin expression checking:" << endl
-		 << endl
-		 << endl;
-	while (!lq.isEmpty())
+	cout << "\nCreate a copy, ls2, of the stack and display the copy:" << endl;
+	LinkedStack<char> ls2 = ls1;
+	while ( !( ls2.isEmpty() ) )
 	{
-		cout << "The string:   " << lq.peekFront() << "   is " << ((isValid(lq.peekFront())) ? "Valid" : "Invalid.") << endl;
+		cout << ls2.peek() << " ";
+		ls2.pop();
+	}
+
+	cout << "\n\nAssign the first stack, ls1, to the second stack, ls2, and then display the second stack:" << endl;
+	ls2 = ls1;
+	while ( !( ls2.isEmpty() ) )
+	{
+		cout << ls2.peek() << " ";
+		ls2.pop();
+	}
+
+	cout << endl << endl;
+
+	cout << "\n\nDo the expression checking:\n" << endl;
+
+	while( !( lq.isEmpty() ) )
+	{
+		cout << "\n\nThe next string is:   " << lq.peekFront() << "  ";
+		if ( validExp( lq.peekFront() ) )
+			cout << " is ";
+		else
+			cout << " is NOT ";
+
+		cout << " a correct expression" << endl;
+
 		lq.dequeue();
 	}
 
-	endProgram(0);
-    return 0;
-}// end main
+	cout << "\n\nProgram Over\n" << endl;
 
-string displayQueue(LinkedQueue<string> &aQueue)
-{
-	string output { "" };
-	while (!aQueue.isEmpty())
-	{
-		output = output + aQueue.peekFront() + "\n";
-		aQueue.dequeue();
-	}
-	return output;
-}//end displayQueue
+	cout << "Press Enter to end -->  ";
+	cin.ignore();
 
-bool addToStack(LinkedStack<char> &aStack, const string line)
-{
-	//cout << line.length() << endl;
-	for (int i = line.length()-1; i >= 0; i--)
-	{
-	//cout << i << "::" << line.at(i) << endl;
-		if (!aStack.push(line.at(i)))
-			return false; //Failed
-	}
-	return true;
-}//end addToStack
-
-string displayStack(LinkedStack<char> &aStack)
-{
-	string output{ "" };
-	while (!aStack.isEmpty())
-	{
-		//cout << "::" << aStack.peek() << endl;
-		output.append(1, aStack.peek());
-		aStack.pop();
-	}
-	return output;
-}//end displayStack
-
-bool isValid(const string &aString)
-{
-	LinkedStack<char> aStack;
-	//cout << "aStack created." << endl;
-	for (size_t i = 0; i < aString.length(); i++) //size_t is an unsigned int datatype, and is used (b/c it should always be >=0) to prevent warning C4018: '<': signed/unsigned mismatch
-	{
-		//cout << "for loop: " << i << endl;
-		/* char list:
-		( = 40
-		{ = 123
-		[ = 91
-		" = 34
-		' = 39
-		) = 41
-		} = 125
-		] = 93
-		\ = 92
-		*/
-		if (aString.at(i) == 92) //Extra Credit portion
-			i++; //Ignore that char, and the next one
-		else if (aString.at(i) == 40 || aString.at(i) == 123 || aString.at(i) == 91)
-		{
-			//( { or [
-			//cout << "( found" << endl;
-			aStack.push(aString.at(i));
-		}
-		else if (aString.at(i) == 34 || aString.at(i) == 39)
-		{
-			//" , '
-			//cout << "\" found" << endl; 
-			if (aStack.isEmpty()) //<--- Is there a better way to do this? I don't want to write a seperate section for the case where it's empty, but I don't want to check EVERY for loop to see if its empty either... is Try/Catch more efficient?
-				aStack.push(aString.at(i));
-			else if (aStack.peek() == aString.at(i))
-			{
-				//last item was a " or '
-				//cout << "After previous \"" << endl;
-				aStack.pop();
-			}
-			else
-			{
-				//Last item was anything else
-				//cout << "New \"" << endl;
-				aStack.push(aString.at(i));
-			}
-		}
-		else if (aString.at(i) == 41)
-		{
-			//)
-			//cout << ") found" << endl;
-			if (aStack.isEmpty())
-				aStack.push(aString.at(i));
-			else if (aStack.peek() == 40)
-			{
-				//Last item was (
-				//cout << "After (" << endl;
-				aStack.pop();
-			}
-			else
-			{
-				//Last item was not (
-				//cout << "Close ) prior to (" << endl;
-				//Test Failed!
-				return false;
-			}//end if
-		}
-		else if (aString.at(i) == 125)
-		{
-			//}
-			//cout << "} found" << endl;
-			if (aStack.isEmpty())
-				aStack.push(aString.at(i));
-			else if (aStack.peek() == 123)
-			{
-				//Last item was {
-				//cout << "After {" << endl;
-				aStack.pop();
-			}
-			else
-			{
-				//Last item was not {
-				//cout << "Close } prior to {" << endl;
-				//Test Failed!
-				return false;
-			}//end if
-		}
-		else if (aString.at(i) == 93)
-		{
-			//]
-			//cout << "] found" << endl;
-			if (aStack.isEmpty())
-				aStack.push(aString.at(i));
-			else if (aStack.peek() == 91)
-			{
-				//Last item was [
-				//cout << "After [" << endl;
-				aStack.pop();
-			}
-			else
-			{
-				//Last item was not [
-				//cout << "Close ] prior to [" << endl;
-				//Test Failed!
-				return false;
-			}//end if
-		}//end if
-	}//end for
-	//cout << "End for" << endl;
-	if (!aStack.isEmpty())
-		return false;
-	return true;
+	return 0;
 }
 
-void endProgram(const int reason)
+void getInput( LinkedQueue<string> &lq )
 {
-	//Inspired by the same named function written by Prof.
-	//It's functionally the exact same function
-	cout << endl
-		 << endl
-		 << "Program ending ";
-	cout << ((reason == 0) ? "successfully." : "unexpectantly due to error(s)!") << endl;
-	cout << endl
-		 << "Press Enter to end";
+	ifstream inFile;
+	string name;
+
+	do
+	{
+		cout << "Enter input file name:  ";
+		cin >> name;
+		inFile.clear();
+		inFile.open( name.c_str() );
+
+		if ( !inFile )
+		{
+			cout << name << " cannot be opened.\n";
+		}
+	} while ( !inFile );
+
 	cin.ignore();
-	exit(reason);
-}//end endProgram
+
+	while ( getline( inFile, name ) )
+		lq.enqueue( name );
+}
+
+bool validExp( const string &exp )
+{
+// #define EXTRA_CREDIT
+
+	LinkedStack<char> ls;
+
+	const string open  = "([{";
+	const string close = ")]}";
+	const string other = "\"'";
+
+	char val;
+	size_t index;
+
+	bool OK = true;
+
+#ifdef EXTRA_CREDIT
+	bool next{ true };
+#endif
+
+	for (size_t pos{ 0 }; OK && pos < exp.size(); ++pos)
+	{
+#ifdef EXTRA_CREDIT
+		if( !next )
+		{
+			next = true;
+			continue;
+		}
+
+		if ( exp[ pos ] == '\\' )
+			next = false;
+#endif
+
+		if( open.find( exp[ pos ] ) != string::npos )
+			ls.push( exp[ pos ] );
+
+		else if ( ( index = close.find( exp[ pos ] ) ) != string::npos )
+		{
+			try 
+			{
+				val = ls.peek();
+				if ( val == open[ index ] )  // does the token on the stack match the cognate open token
+					ls.pop();
+				else
+					OK = false;
+			}
+			catch( PrecondViolatedExcept & )
+			{
+				OK = false;
+			}
+		}
+
+		else if ( other.find( exp[ pos ] ) != string::npos )  // " or '
+		{
+			try 
+			{
+				val = ls.peek();
+				if ( val == exp[ pos ] )
+					ls.pop();
+				else
+					ls.push( exp[ pos ] );
+			}
+			catch( PrecondViolatedExcept & )
+			{
+				ls.push( exp[ pos ] );
+			}
+		}
+	}
+
+	if ( !( ls.isEmpty() ) )  // should be no leftover tokens
+		OK = false;
+
+#ifdef EXTRA_CREDIT
+#undef EXTRA_CREDIT
+#endif
+
+	return OK;
+}

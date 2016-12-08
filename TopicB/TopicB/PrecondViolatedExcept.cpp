@@ -1,3 +1,4 @@
+
 /** Listing 7-6.
     @file PrecondViolatedExcept.cpp */
 #include "PrecondViolatedExcept.h"  

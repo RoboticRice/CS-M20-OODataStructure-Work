@@ -5,8 +5,8 @@
 
 	Modified to add copy constructor and assignment operator
 
-	Used from TopicA solution provided by Prof.
 **********************************************************/
+
 
 #ifndef _NODE
 #define _NODE
@@ -25,7 +25,7 @@ private:
    Node<ItemType> & operator = ( const Node<ItemType> & node ) {}
    
 public:
-   Node();
+   Node() {};
    Node(const ItemType& anItem);
    Node(const ItemType& anItem, shared_ptr<Node<ItemType>>  nextNodePtr);
    void setItem(const ItemType& anItem);
@@ -35,10 +35,13 @@ public:
 }; // end Node
 
 //#include "Node.cpp"
+
 /** @file Node.cpp
 Listing 4-2 */
 // #include "Node.h"
 // #include <cstddef>
+
+
 
 template<class ItemType>
 Node<ItemType>::Node(const ItemType& anItem) : item(anItem), next(nullptr)
@@ -74,5 +77,8 @@ auto Node<ItemType>::getNext() const
 {
 	return next;
 } // end getNext
+
+
+
 
 #endif
