@@ -1,7 +1,7 @@
 # Debugging info
 Debug/
 x64/
-.vs/
+#.vs/ - Discovered this folder has a purpose! Oops!
 
 # Open Files info
 *.opendb
