@@ -1,7 +1,11 @@
 # Debugging info
 Debug/
 x64/
-#.vs/ - Discovered this folder has a purpose! Oops!
+#.vs/ - Discovered this folder has a purpose for TopicA only!
+.vs/TopicB/
+.vs/TopicD/
+.vs/TopicE/
+.vs/TopicF/
 
 # Open Files info
 *.opendb
