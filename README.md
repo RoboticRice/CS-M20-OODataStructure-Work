@@ -1,7 +1,13 @@
 # CS-M20-OODataStructure-Work
 Moorpark Community College, Computer Science Course: CS M20 - Object Oriented Data Structure and Algorithm Analysis (Using C++)
 
-#8.2 Assignment:
+#Professor's Source Code
+
+#Other
+Things like the exercies and exams.
+
+#Source Code (From Textbook)
+This is all of the pre-made C++ code that was written in the textbook, so you don't have to hand-copy it.
 
 #Topic A Project:
 
@@ -12,6 +18,3 @@ Moorpark Community College, Computer Science Course: CS M20 - Object Oriented Da
 #Topic E Project:
 
 #Topic F Project:
-
-#Final Project:
-This was a group project, and is hosted on another git user's account. You can find it at https://github.com/tolx/Vending-Machine-CS-M20
