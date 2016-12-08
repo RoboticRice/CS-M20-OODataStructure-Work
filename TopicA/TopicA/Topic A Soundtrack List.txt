@@ -12,31 +12,31 @@ SBS 2017
 2004
 Dimitri Tiomkin
 The Alamo
-Prometheus     
- XPCD 168
+Prometheus
+XPCD 168
 11/09
 2010
 Akira Ifukube
 Godzilla
-La-La Land     
- LLLCD 1022
+La-La Land
+LLLCD 1022
 1954
 2004
 John Barry
 The Lion in Winter
-Legacy         
- CK66133
+Legacy
+CK66133
 8/68
 1995
 Miklos Rozsa
 Ben-Hur
-FSM             
+FSM
 V15N1
 1959
 2012
 Bronislau Kaper
 Lord Jim
-FSM             
+FSM
 V8N11
 12/64
 2005
@@ -48,13 +48,13 @@ VCL 04031017
 2003
 Jerry Fielding
 The Wild Bunch
-FSM             
+FSM
 V16N1
 1969
 2013
 John Barry
 From Russia With Love
-EMI             
+EMI
 72435-80588-2-6
 3/63
 2003
@@ -66,19 +66,19 @@ VCD 47254
 1985
 Howard Shore
 The Fellowship of the Ring
-Reprise        
- 49454-2
+Reprise
+49454-2
 2001
 2005
 Erich Wolfgang Korngold
 The Adventures of Robin Hood
-Marco Polo     
+Marco Polo
 8.225268
 2/03
 2003
 Maurice Jarre
 The Train
-FSM             
+FSM
 V10N8
 1964
 2007
@@ -90,43 +90,43 @@ VCL 11061054
 2006
 Bernard Herrmann
 The 7th Voyage of Sinbad
-Prometheus     
- XPCD 166
+Prometheus
+XPCD 166
 1958
 2009
 Elmer Bernstein
 To Kill a Mockingbird
-Intrada         
+Intrada
 262
 1963
 2014
 Miklos Rozsa
 Moonfleet
-FSM             
+FSM
 V6N20
 1/55
 2004
 William Walton
 Henry V
-Chandos         
+Chandos
 CHAN 8892
 5/90
 1990
 Franz Waxman
 The Nun's Story
-Stanyan       
-  STZ-114
+Stanyan
+STZ-114
 1958
 1991
 Elmer Bernstein
 The Magnificent Seven
-Ryko            
+Ryko
 RCD 10741
 1960
 1998
 Maurice Jarre
 Lawrence of Arabia
-tadlow music:   
+tadlow music:
 TADLOW012
 3/10
 2010
@@ -144,13 +144,13 @@ VCL 05021008
 2002
 Alex North
 The Shoes of the Fisherman
-FSM             
+FSM
 V7N6
 9/68
 2004
 Elmer Bernstein
 Summer and Smoke
-RCA             
+RCA
 74321720592
 11/62
 1999
@@ -162,25 +162,25 @@ VSD-5765
 1997
 Miklos Rozsa
 El Cid
-FSM             
+FSM
 Box 04 Disc 13
 10/61
 2010
 Elmer Bernstein
 The Great Escape
-Intrada         
+Intrada
 MAF 7112
 1963
 2011
 Bronislau Kaper
 Mutiny on the Bounty
-FSM            
- V7N16
+FSM
+V7N16
 1962
 2004
 Patrick Doyle
 Much Ado About Nothing
-Epic           
- EX 54009
+Epic
+EX 54009
 3/93
 1993

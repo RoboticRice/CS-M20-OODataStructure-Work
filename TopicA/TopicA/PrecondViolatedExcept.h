@@ -1,14 +1,18 @@
-/** @file PrecondViolatedExcept.h */
-#ifndef PRECOND_VIOLATED_EXCEPT_
-#define PRECOND_VIOLATED_EXCEPT_
+
+/** Listing 7-5.
+    @file PrecondViolatedExcept.h */
+
+#ifndef _PRECOND_VIOLATED_EXCEPT
+#define _PRECOND_VIOLATED_EXCEPT
 
 #include <stdexcept>
 #include <string>
 
-class PrecondViolatedExcept : public std::logic_error
+using namespace std;
+
+class PrecondViolatedExcept : public logic_error
 {
 public:
-	PrecondViolatedExcept(const std::string& message = "");
-}; //end PrecondViolatedExcept
-
+   PrecondViolatedExcept(const string& message = "");
+}; // end PrecondViolatedExcep 
 #endif

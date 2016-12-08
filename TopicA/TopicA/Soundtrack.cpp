@@ -1,87 +1,81 @@
+/****************************************
+	Topic A Project 
+
+	CS M20
+
+	soundtrack.cpp
+
+**************************************/
+
 #include "Soundtrack.h"
 
-Soundtrack::Soundtrack() : composer(""), title(""), label(""), catalog(""), recorded(""), released("")
-{
-	//Nothing more needs to be done
-} //end default constructor
 
-Soundtrack::Soundtrack(std::string aComposer, std::string aTitle, std::string aLabel, std::string aCatalog, std::string recordedYear, std::string releasedYear)
-	: composer(aComposer), title(aTitle), label(aLabel), catalog(aCatalog), recorded(recordedYear), released(releasedYear) 
+bool soundtrack::operator == (const soundtrack & right) const
 {
-	//Nothing more needs to be done
-} //end constructor
+	if (this == &right)
+		return true;
 
-void Soundtrack::setComposer(std::string aComposer)
-{
-	composer = aComposer;
-} //end setComposer
+	bool bComposer = false, bTitle = false, bLabel = false, bCat_Num = false,
+		bRecorded = false, bReleased = false;
 
-void Soundtrack::setTitle(std::string aTitle)
-{
-	title = aTitle;
-} //end setTitle
+	// what is the major assumption for these comparisons?
+	// can these be written more efficiently?
 
-void Soundtrack::setLabel(std::string aLabel)
-{
-	label = aLabel;
-} //end setLabel
+	if (composer == "" || right.composer == "" || composer == right.composer)
+		bComposer = true;
 
-void Soundtrack::setCatalog(std::string aCatalog)
-{
-	catalog = aCatalog;
-} //end setCatalog
+	if (bComposer && (title == "" || right.title == "" || title == right.title))
+		bTitle = true;
 
-void Soundtrack::setRecorded(std::string recordedYear)
-{
-	recorded = recordedYear;
-} //end setRecorded
+	if (bComposer && bTitle && (label == "" || right.label == "" || label == right.label))
+		bLabel = true;
 
-void Soundtrack::setReleased(std::string releasedYear)
-{
-	released = releasedYear;
-} //end setReleased
+	if (bComposer && bTitle && bLabel && (cat_num == "" || right.cat_num == "" || cat_num == right.cat_num))
+		bCat_Num = true;
 
-void Soundtrack::clear()
-{
-	composer = "";
-	title = "";
-	label = "";
-	catalog = "";
-	recorded = "";
-	released = "";
-} //end clear
+	if (bComposer && bTitle && bLabel && bCat_Num && (recorded == "1900" || right.recorded == "1900" || recorded == right.recorded) )
+		bRecorded = true;
 
-std::string Soundtrack::print() const
-{
-	return composer + ", " + title + ", " + label + ", " + catalog + ", " + recorded + ", " + released + "."; 
-} //end print
+	if (bComposer && bTitle && bLabel && bCat_Num && bRecorded &&
+		(released == 1900 || right.released == 1900 || released == right.released) )
+		bReleased = true;
 
-std::string Soundtrack::getComposer() const
-{
-	return composer;
-} //end getComposer
+	return bComposer && bTitle && bLabel && bCat_Num && bRecorded && bReleased;
+}
 
-std::string Soundtrack::getTitle() const
-{
-	return title;
-} //end getTitle
 
-std::string Soundtrack::getLabel() const
+ostream &operator << (ostream & out, const soundtrack & val)
 {
-	return label;
-} //end getLabel
+	out << val.getComposer() << "  " << val.getTitle() << "  " << val.getLabel() << "  "
+		<< val.getCat_Num() << "  " << val.getRecorded() << "  " << val.getReleased() << endl;
 
-std::string Soundtrack::getCatalog() const
-{
-	return catalog;
-} //end getCatalog
+	return out;
+}
 
-std::string Soundtrack::getRecorded() const
+istream &operator >> (istream &in, soundtrack &val)
 {
-	return recorded;
-} //end getRecorded
+	string buf;
+	int iBuf;
 
-std::string Soundtrack::getReleased() const
-{
-	return released;
-} //end getReleased
+	getline(in, buf);
+	val.setComposer(buf);
+
+	getline(in, buf);
+	val.setTitle(buf);
+
+	getline(in, buf);
+	val.setLabel(buf);
+
+	getline(in, buf);
+	val.setCat_Num(buf);
+
+	getline(in, buf);
+	val.setRecorded(buf);
+
+	in >> iBuf;
+	val.setReleased(iBuf);
+
+	in.get();  // why is this here?
+
+	return in;
+}

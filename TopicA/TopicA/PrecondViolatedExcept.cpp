@@ -1,6 +1,10 @@
-/**@file PrecondViolatedExcept.cpp */
-#include "PrecondViolatedExcept.h"
+/** Listing 7-6.
+    @file PrecondViolatedExcept.cpp */
+#include "PrecondViolatedExcept.h"  
 
-PrecondViolatedExcept::PrecondViolatedExcept(const std::string& message) : std::logic_error("Precondition Violated Exception: " + message)
+PrecondViolatedExcept::PrecondViolatedExcept(const string& message): logic_error("Precondition Violated Exception: " + message)
 {
-} //end constructor
+}  // end constructor
+
+// End of implementation file.
+
