@@ -1,90 +1,65 @@
-/** A class of nodes for a link-based binary tree.
-@file NinaryNode.h */
+//  Created by Frank M. Carrano and Tim Henry.
+//  Copyright (c) 2017 __Pearson Education__. All rights reserved.
 
-#ifndef BINARY_NODE_
-#define BINARY_NODE_
+// Modified by Martin Chetlen
+//  CS M20 Topic D Project
+
+/** A class of nodes for a link-based binary tree.
+ Listing 16-2.
+ @file BinaryNode.h */
+ 
+#ifndef _BINARY_NODE
+#define _BINARY_NODE
+
 #include <memory>
+using namespace std;
 
 template<class ItemType>
 class BinaryNode
-{
+{   
 private:
-	ItemType								item;			//Data portion
-	std::shared_ptr<BinaryNode<ItemType>>	leftChildPtr;	//Pointer to left child
-	std::shared_ptr<BinaryNode<ItemType>>	rightChildPtr;	//Pointer to right child
+   ItemType              item;           // Data portion
+   shared_ptr<BinaryNode<ItemType>>  leftChildPtr;   // Pointer to left child
+   shared_ptr<BinaryNode<ItemType>>  rightChildPtr;  // Pointer to right child
 
 public:
-	BinaryNode() { } //
-	BinaryNode(const ItemType& anItem);
-	BinaryNode(const ItemType& anItem,
-		std::shared_ptr<BinaryNode<ItemType>> leftPtr,
-		std::shared_ptr<BinaryNode<ItemType>> rightPtr);
+	BinaryNode() = default;
+   BinaryNode(const ItemType& anItem) : item( anItem ) {}  //added initializer list
+   BinaryNode(const ItemType& anItem,
+	   shared_ptr<BinaryNode<ItemType>>  leftPtr,
+	   shared_ptr<BinaryNode<ItemType>>  rightPtr)  : item( anItem ), leftChildPtr( leftPtr ), rightChildPtr( rightPtr ) {}  //added initializer list
 
-	void setItem(const ItemType& anItem);
-	ItemType getItem() const;
+   // add copy constructor
+   BinaryNode( const BinaryNode<ItemType> & right ) { *this = right; }
 
-	bool isLeaf() const;
+   // add assignment operator
+   const BinaryNode<ItemType> &operator = ( const BinaryNode<ItemType> & right );
 
-	std::shared_ptr<BinaryNode<ItemType>> getLeftChildPtr() const; //auto needs to be replaced
-	std::shared_ptr<BinaryNode<ItemType>> getRightChildPtr() const; //auto needs to be replaced
+   void setItem(const ItemType& anItem) { item = anItem; }
+   ItemType getItem() const { return item; }
+   
+   bool isLeaf() const { return ( leftChildPtr == nullptr && rightChildPtr == nullptr ? true : false ); }
 
-	void setLeftChildPtr(std::shared_ptr<BinaryNode<ItemType>> leftPtr);
-	void setRightChildPtr(std::shared_ptr<BinaryNode<ItemType>> rightPtr);
+   shared_ptr<BinaryNode<ItemType>>  getLeftChildPtr() const { return leftChildPtr; }  // not using auto return
+   shared_ptr<BinaryNode<ItemType>>  getRightChildPtr() const  { return rightChildPtr; }
+   
+   void setLeftChildPtr(shared_ptr<BinaryNode<ItemType>> leftPtr) { leftChildPtr = leftPtr; }
+   void setRightChildPtr(shared_ptr<BinaryNode<ItemType>> rightPtr) { rightChildPtr = rightPtr; }
 }; // end BinaryNode
 
-//#include "BinaryNode.cpp"
-template<class ItemType>
-BinaryNode<ItemType>::BinaryNode(const ItemType& anItem) : item(anItem), leftChildPtr(nullptr), rightChildPtr(nullptr)
-{
-} // end constructor
+// Implementation
 
 template<class ItemType>
-BinaryNode<ItemType>::BinaryNode(const ItemType& anItem, std::shared_ptr<BinaryNode<ItemType>>  leftPtr, std::shared_ptr<BinaryNode<ItemType>>  rightPtr) :
-	item{ anItem }, leftChildPtr{ leftPtr }, rightChildPtr{ rightPtr }
+const BinaryNode<ItemType> & BinaryNode<ItemType>::operator = ( const BinaryNode<ItemType> & right )
 {
-} // end constructor
+	if ( this == &right )
+		return *this;
 
-template<class ItemType>
-void BinaryNode<ItemType>::setItem(const ItemType& anItem)
-{
-	item = anItem;
-} // end setItem
+	item = right.item;
+	leftChildPtr = right.leftChildPtr;
+	rightChildPtr = right.rightChildPtr;
 
-template<class ItemType>
-ItemType BinaryNode<ItemType>::getItem() const
-{
-	return item;
-} // end getItem
-
-template<class ItemType>
-bool BinaryNode<ItemType>::isLeaf() const
-{
-	return (leftChildPtr==nullptr) && (rightChildPtr==nullptr);
-	//return true only if left AND right are nullptr
+	return *this;
 }
 
-template<class ItemType>
-std::shared_ptr<BinaryNode<ItemType>> BinaryNode<ItemType>::getLeftChildPtr() const
-{
-	return leftChildPtr;
-} // end getLeftChildPtr
-
-template<class ItemType>
-std::shared_ptr<BinaryNode<ItemType>> BinaryNode<ItemType>::getRightChildPtr() const
-{
-	return rightChildPtr;
-} // end getRightChildPtr
-
-template<class ItemType>
-void BinaryNode<ItemType>::setLeftChildPtr(std::shared_ptr<BinaryNode<ItemType>>  leftPtr)
-{
-	leftChildPtr = leftPtr;
-} // end setLeftChildPtr
-
-template<class ItemType>
-void BinaryNode<ItemType>::setRightChildPtr(std::shared_ptr<BinaryNode<ItemType>>  rightPtr)
-{
-	rightChildPtr = rightPtr;
-} // end setRightChildPtr
-
-#endif
+#endif 

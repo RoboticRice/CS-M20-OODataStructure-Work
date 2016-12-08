@@ -1,227 +1,233 @@
-/** Link-based implimentation of the ADT binary search tree.
-@file BinarySearchTree.h */
 
-#ifndef BINARY_SEARCH_TREE_
-#define BINARY_SEARCH_TREE_
 
-#include "BinaryTreeInterface.h"
-#include "BinaryNode.h"
+// Modified by Martin Chetlen
+//  CS M20 Topic D Project
+
+/** Link-based implementation of the ADT binary search tree.
+ @file BinarySearchTree.h */
+ 
+#ifndef _BINARY_SEARCH_TREE
+#define _BINARY_SEARCH_TREE
+
+#include <memory>
+using namespace std;
+
 #include "BinaryNodeTree.h"
 #include "NotFoundException.h"
 #include "PrecondViolatedExcept.h"
-#include <memory>
 
 template<class ItemType>
 class BinarySearchTree : public BinaryNodeTree<ItemType>
 {
-//I decided to comment out the lines that were originally in the BST header file from the textbook
-//so I could see the changes i made, and so I knew which functions were expected to work with the BST,
-//that were coming from the BNT.
+
 private:
-	//std::shared_ptr<BinaryNode<ItemType>> rootPtr;
+ // use rootPtr in BinaryNodeTree
+//   BinaryNode<ItemType>* rootPtr;
+
+	void setRootData() = delete; // clients of this class should not have access to this function
+   
 protected:
-	//------------------------------------------------------------
-	//	Protected Utility Methods Section.
-	//	Recursive helper methods for the public methods
-	//------------------------------------------------------------
-	// Places a given node at its proper position in this binary
-	// search tree
-	std::shared_ptr<BinaryNode<ItemType>> placeNode(std::shared_ptr<BinaryNode<ItemType>> subTreePtr,
-		std::shared_ptr<BinaryNode<ItemType>> newNode); //replaced auto return type
+   //------------------------------------------------------------
+   // Protected Utility Methods Section:
+   // Recursive helper methods for the public methods.
+   //------------------------------------------------------------
+   // Recursively finds where the given node should be placed and
+   // inserts it in a leaf at that point.
+	shared_ptr<BinaryNode<ItemType>> insertInorder(shared_ptr<BinaryNode<ItemType>>  subTreePtr,
+	   shared_ptr<BinaryNode<ItemType>>  newNode);
+   
 
-	// Removes the given target value from the tree while maintaining
-	// a binary search tree.
-	std::shared_ptr<BinaryNode<ItemType>> removeValue(std::shared_ptr<BinaryNode<ItemType>> subTreePtr,
-		const ItemType target,
-		bool& isSuccessful) override; //replaced auto return type
+   // Removes the given target value from the tree while maintaining a
+   // binary search tree.
+	shared_ptr<BinaryNode<ItemType>> removeValue(shared_ptr<BinaryNode<ItemType>>  subTreePtr,
+                                     const ItemType target,
+                                     bool& success) override;
 
-	// Removes a given node from a tree while maintaining a binary search tree
-	//auto removeNode(std::shared_ptr<BinaryNode<ItemType>> nodePtr);
 
-	// Removes the leftmost node in the left subtree of the node
-	// pointed to by nodePtr.
-	// Sets inorderSuccessor to the value in this node.
-	// Returns a pointer to the revised subtree.
-	//auto removeLeftMostNode(std::shared_ptr<BinaryNode<ItemType>> subTreePtr,
-	//	ItemType& inorderSuccessor);
-
-	// Returns a pointer to the node containing the given value,
-	// or nullptr if not found.
-	std::shared_ptr<BinaryNode<ItemType>> findNode(std::shared_ptr<BinaryNode<ItemType>> treePtr,
-		const ItemType& target) const; //replaced auto return type
-
+   // Returns a pointer to the node containing the given value,
+   // or nullptr if not found.
+   shared_ptr<BinaryNode<ItemType>> findNode(shared_ptr<BinaryNode<ItemType>> treePtr,
+                                  const ItemType& target) const;
+   
 public:
-	//------------------------------------------------------------
-	//	Constructor and Destructor Section.
-	//------------------------------------------------------------
-	//BinarySearchTree();
-	//BinarySearchTree(const ItemType& rootItem);
-	//BinarySearchTree(const BinarySearchTree<ItemType>& tree);
-	//virtual ~BinarySearchTree();
+   //------------------------------------------------------------
+   // Constructor and Destructor Section.
+   //------------------------------------------------------------
+   BinarySearchTree() = default;
+   BinarySearchTree(const ItemType& rootItem);
+   BinarySearchTree(const BinarySearchTree<ItemType>& tree);
+   // virtual ~BinarySearchTree();
+   
+   //------------------------------------------------------------
+   // Public Methods Section.
+   //------------------------------------------------------------
 
-	//------------------------------------------------------------
-	//	Public Methods Section.
-	//------------------------------------------------------------
-	//bool isEmpty() const;
-	//int getHeight() const;
-	//int getNumberOfNodes() const;
-	//ItemType getRootData() const throw(PrecondViolatedExcept);
-	//void setRootData(const ItemType& newData);
-	bool add(const ItemType& newEntry);
-	bool remove(const ItemType& target);
-	//void clear();
-	ItemType getEntry(const ItemType& anEntry) const throw(NotFoundException);
-	bool contains(const ItemType& anEntry) const;
 
-	//------------------------------------------------------------
-	//	Public Traversals Section.
-	//------------------------------------------------------------
-	//void preorderTraverse(void visit(ItemType&)) const;
-	//void inorderTraverse(void visit(ItemType&)) const;
-	//void postorderTraverse(void visit(ItemType&)) const;
+   bool add(const ItemType& newEntry) override;
 
-	//------------------------------------------------------------
-	//	Overloaded Operator Section.
-	//------------------------------------------------------------
-	BinarySearchTree<ItemType>& operator=(const BinarySearchTree<ItemType>& rightHandSide);
+   bool remove(const ItemType& anEntry) override;
+
+
+   ItemType getEntry(const ItemType& anEntry) const  throw(NotFoundException) override;
+   bool contains(const ItemType& anEntry) const override;
+
+
+   //------------------------------------------------------------
+   // Overloaded Operator Section.
+   //------------------------------------------------------------
+   BinarySearchTree<ItemType>& operator=(const BinarySearchTree<ItemType>& rightHandSide);   
 }; // end BinarySearchTree
 
-//#include "BinarySearchTree.cpp"
-/************************************************************************************************************************************************************************************************************/
-//Begin of .cpp file
+// #include "BinarySearchTree.cpp"
 
-//-----------------------------------
-//
-//		End CONSTRUCTORS
-//
-//		Start PROTECTED
-//
-//-----------------------------------
+   //------------------------------------------------------------
+   // Protected Utility Methods Section:
+   // Recursive helper methods for the public methods.
 
-template<class ItemType>
-std::shared_ptr<BinaryNode<ItemType>> BinarySearchTree<ItemType>::placeNode(std::shared_ptr<BinaryNode<ItemType>> subTreePtr, std::shared_ptr<BinaryNode<ItemType>> newNode)
+
+   //------------------------------------------------------------
+   // Recursively finds where the given node should be placed and
+   // inserts it in a leaf at that point.
+   template<class ItemType>
+   shared_ptr<BinaryNode<ItemType>> BinarySearchTree<ItemType>::insertInorder(shared_ptr<BinaryNode<ItemType>>  subTreePtr,
+	   shared_ptr<BinaryNode<ItemType>> newNode)
+   {
+	   if ( subTreePtr == nullptr )
+	   {
+		   return newNode;
+	   }
+	   else if ( newNode->getItem() < subTreePtr->getItem() )
+		   subTreePtr->setLeftChildPtr( insertInorder( subTreePtr->getLeftChildPtr(), newNode ) );
+	   else
+		   subTreePtr->setRightChildPtr( insertInorder( subTreePtr->getRightChildPtr(), newNode ) );
+
+	   return subTreePtr;
+   } // end insertInorder
+
+   
+   // Returns a pointer to the node containing the given value,
+   // or nullptr if not found.
+   template<class ItemType>
+   shared_ptr<BinaryNode<ItemType>>  BinarySearchTree<ItemType>::findNode(shared_ptr<BinaryNode<ItemType>> treePtr,
+                                  const ItemType& target) const
+   {
+	   if ( treePtr != nullptr && treePtr->getItem() != target )  // order matters here
+	   {
+		   if ( target < treePtr->getItem() )
+			   return findNode( treePtr->getLeftChildPtr(), target );
+		   else
+			   return findNode( treePtr->getRightChildPtr(), target );
+	   }
+	   else
+		   return treePtr;
+   }  // end findNode
+
+
+   // Removes the given target value from the tree while maintaining a
+   // binary search tree.
+   template<class ItemType>
+   shared_ptr<BinaryNode<ItemType>> BinarySearchTree<ItemType>::removeValue(shared_ptr<BinaryNode<ItemType>> subTreePtr,
+																const ItemType target,
+																bool& success)
 {
-	if (subTreePtr == nullptr)
-		return newNode;
-		//exit point
-	if (newNode->getItem() >= subTreePtr->getItem()) //= to handle duplicates
+	if ( subTreePtr == nullptr )  // target not found
 	{
-		auto rightPtr = subTreePtr->getRightChildPtr();
-		rightPtr = placeNode(rightPtr, newNode);
-		subTreePtr->setRightChildPtr(rightPtr);
+		success = false;
+		return subTreePtr;
 	}
-	else //if (newNode->getItem() > subTreePtr->getItem())
-	{
-		auto leftPtr = subTreePtr->getLeftChildPtr();
-		leftPtr = placeNode(leftPtr, newNode);
-		subTreePtr->setLeftChildPtr(leftPtr);
-	}
-	return subTreePtr;
-} // end balancedAdd
 
-template<class ItemType>
-std::shared_ptr<BinaryNode<ItemType>> BinarySearchTree<ItemType>::removeValue(std::shared_ptr<BinaryNode<ItemType>> subTreePtr, const ItemType target, bool& isSuccessful)
-{
-	if (subTreePtr == nullptr)
-		isSuccessful = false;
-	else if (subTreePtr->getItem() == target)
+// ItemType it = subTreePtr->getItem();  // ***********************
+
+	if( subTreePtr->getItem() == target )  // found target
 	{
-		subTreePtr = removeNode(subTreePtr);
-		isSuccessful = true;
-	}
-	else 
+		success = true;
+		return this->foundRemoveValue( subTreePtr );
+	}  // end found target
+	else  // Did not find target - keep trying
 	{
-		std::shared_ptr<BinaryNode<ItemType>> tempPtr = nullptr;
-		if (subTreePtr->getItem() > target) 
-		{
-			tempPtr = removeValue(subTreePtr->getLeftChildPtr(), target, isSuccessful);
-			subTreePtr->setLeftChildPtr(tempPtr);
-		}
+		if ( target < subTreePtr->getItem () )
+			subTreePtr->setLeftChildPtr( removeValue( subTreePtr->getLeftChildPtr(), target, success ) );
 		else
-		{
-			tempPtr = removeValue(subTreePtr->getRightChildPtr(), target, isSuccessful);
-			subTreePtr->setRightChildPtr(tempPtr);
-		}
+			subTreePtr->setRightChildPtr( removeValue( subTreePtr->getRightChildPtr(), target, success ) );
+
+		return subTreePtr;
 	}
-	return subTreePtr;
-	/* Tried this first, but then realize it was returning the pointer to the nodeToBeRemoved, when I needed the pointer to the parent of that node
-	else
-	{ 
-		std::shared_ptr<BinaryNode<ItemType>> tempPtr = nullptr;
-		tempPtr = findNode(subTreePtr, target);
-		if (tempPtr == nullptr)
-			isSuccessful = false;
-		else
-		{	
-			//This will only happen if found
-			subTreePtr = removeNode(tempPtr);
-			isSuccessful = true;
-		}
-	}
-	*/
-	return subTreePtr;
-} // end removeValue
+}  // end removeValue
 
-template<class ItemType>
-std::shared_ptr<BinaryNode<ItemType>> BinarySearchTree<ItemType>::findNode(std::shared_ptr<BinaryNode<ItemType>> treePtr, const ItemType& target) const
-{
-	std::shared_ptr<BinaryNode<ItemType>> tempPtr = nullptr;
-	if (treePtr == nullptr) {}
-		//Do nothing, exit the if statement
-	else if (treePtr->getItem() == target) //Found the target
-		tempPtr = treePtr;
-	else if (treePtr->getItem() > target)
-		tempPtr = findNode(treePtr->getLeftChildPtr(), target);
-	else //treePtr < target
-		tempPtr = findNode(treePtr->getRightChildPtr(), target);
-	return tempPtr;//If not found, then tempPtr should still be nullptr, otherwise tempPtr will be the ptr to the location of the node that was found
-} // end findNode
 
-//-----------------------------------
-//
-//		End PROTECTED
-//
-//		Start PUBLIC
-//
-//-----------------------------------
+   //------------------------------------------------------------
+   // Constructor and Destructor Section.
+   //------------------------------------------------------------
 
-template<class ItemType>
-bool BinarySearchTree<ItemType>::add(const ItemType& newData)
-{
-	auto newNodePtr = std::make_shared<BinaryNode<ItemType>>(newData);
-	setRootPtr(placeNode(getRootPtr(), newNodePtr));
+   template<class ItemType>
+   BinarySearchTree<ItemType>::BinarySearchTree(const ItemType& rootItem) : BinarySearchTree<ItemType>::BinaryNodeTree( rootItem ) {}
+ 
+   template<class ItemType>
+   BinarySearchTree<ItemType>::BinarySearchTree(const BinarySearchTree<ItemType>& tree) : BinarySearchTree<ItemType>::BinaryNodeTree( tree ) {}
 
-	return true;
-} // end add
+   //------------------------------------------------------------
+   // Public Methods Section.
+   //------------------------------------------------------------
 
-template<class ItemType>
-bool BinarySearchTree<ItemType>::remove(const ItemType& data)
-{
-	bool isSuccessful{ false };
-	setRootPtr(removeValue(getRootPtr(), data, isSuccessful));
-	return isSuccessful;
-} // end remove
+   template<class ItemType>
+   bool BinarySearchTree<ItemType>::add(const ItemType& newEntry)
+   {
+	   shared_ptr<BinaryNode<ItemType>> newNode = make_shared<BinaryNode<ItemType>>( newEntry );
+	   this->rootPtr = insertInorder( this->rootPtr, newNode );
 
-template<class ItemType>
-ItemType BinarySearchTree<ItemType>::getEntry(const ItemType& anEntry) const throw(NotFoundException)
-{
-	std::shared_ptr<BinaryNode<ItemType>> tempPtr = nullptr;
-	tempPtr = findNode(getRootPtr(), anEntry);
-	if (tempPtr==nullptr)
-		throw NotFoundException("getEntry - Entry not found");
-	return tempPtr->getItem();
-} // end getEntry
+	   return true;
+   }  // end InsertInorder
+
+   template<class ItemType>
+   bool BinarySearchTree<ItemType>::remove(const ItemType& anEntry)
+{								
+	if ( this->isEmpty() )
+		return false;
+
+	bool success = false;
+
+	this->rootPtr = this->removeValue( this->rootPtr, anEntry, success );
+
+	return success;
+}  // end remove
 
 template<class ItemType>
 bool BinarySearchTree<ItemType>::contains(const ItemType& anEntry) const
 {
-	return (findNode(getRootPtr(), anEntry) != nullptr) ? true : false;
-} // end contains
+	// bool success = false;
+
+	auto temp = this->findNode( this->rootPtr, anEntry );
+
+	if ( temp != nullptr )
+		return true;
+	else
+		return false;
+}  // end contains
+
 
 template<class ItemType>
-BinarySearchTree<ItemType>& BinarySearchTree<ItemType>::operator=(const BinarySearchTree<ItemType>& rightHandSide)
+ItemType BinarySearchTree<ItemType>::getEntry(const ItemType& anEntry) const throw(NotFoundException)
 {
-	setRootPtr(copyTree(rightHandSide->getRootPtr()));
-} // end overloaded = operator
+	// bool success = false;
+
+	auto temp = this->findNode( this->rootPtr, anEntry );
+
+	if ( temp == nullptr )
+		throw NotFoundException( "The entry was not found " );
+
+	return temp->getItem();
+}  // end getEntry
+
+
+   template<class ItemType>
+   BinarySearchTree<ItemType>& BinarySearchTree<ItemType>::operator=(const BinarySearchTree<ItemType>& rightHandSide)
+   {
+	  BinaryNodeTree<ItemType>::operator = ( rightHandSide );
+
+	  return *this;
+   }
+
+
+
 
 #endif

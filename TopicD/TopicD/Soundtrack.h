@@ -1,21 +1,15 @@
 /*************************************
-	CS M20 Topic A Project
+	CS M20 Topic D Project
 
 	soundtrack class
+
+	Modified from the Topic A class by the addition of != and < overloads
 	
 **********************************/
-/*Added the #def section since it was not in the original code written by prof, which caused an error when I accidentally called this twice*/
-#ifndef SOUNDTRACK
-#define SOUNDTRACK
 
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <algorithm> 
-#include <functional> 
-#include <cctype>
-#include <locale>
-#include <iomanip>
 
 using namespace std;
 
@@ -52,8 +46,10 @@ public:
 	}
 
 	bool operator == (const soundtrack & right) const;
-	bool operator > (const soundtrack & right) const; //compares released years
-	bool operator >= (const soundtrack & right) const; //compares released years
+
+	// Added functions for this project
+	bool operator != (const soundtrack & right) const { return (!(*this == right)); }
+	bool operator < (const soundtrack & right) const { return (title < right.title); }
 
 
 private:
@@ -68,6 +64,3 @@ private:
 ostream &operator << (ostream & out, const soundtrack & val);
 istream &operator >> (istream &in, soundtrack &val);
 
-static inline std::string &rtrim(std::string &s);
-
-#endif

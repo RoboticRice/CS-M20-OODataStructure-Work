@@ -1,6 +1,8 @@
+//  Created by Frank M. Carrano and Tim Henry.
+//  Copyright (c) 2017 __Pearson Education__. All rights reserved.
 
 /** Listing 7-5.
-    @file PrecondViolatedExcept.h */
+    @file PrecondViolatedExcep.h */
 
 #ifndef _PRECOND_VIOLATED_EXCEPT
 #define _PRECOND_VIOLATED_EXCEPT
@@ -14,5 +16,5 @@ class PrecondViolatedExcept : public logic_error
 {
 public:
    PrecondViolatedExcept(const string& message = "");
-}; // end PrecondViolatedExcep 
+}; // end PrecondViolatedExcept 
 #endif

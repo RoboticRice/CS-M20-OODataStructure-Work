@@ -146,7 +146,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
     <Text Include="Topic D Soundtrack.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -157,13 +156,10 @@
     <ClInclude Include="NotFoundException.h" />
     <ClInclude Include="PrecondViolatedExcept.h" />
     <ClInclude Include="Soundtrack.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PrecondViolatedExcept.cpp" />
     <ClCompile Include="Soundtrack.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TopicD.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
