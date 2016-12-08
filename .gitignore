@@ -2,10 +2,10 @@
 Debug/
 x64/
 #.vs/ - Discovered this folder has a purpose for TopicA only!
-.vs/TopicB/
-.vs/TopicD/
-.vs/TopicE/
-.vs/TopicF/
+TopicB/.vs/TopicB/v14/.suo
+TopicD/.vs/TopicD/v14/.suo
+TopicE/.vs/TopicE/v14/.suo
+TopicF/.vs/TopicF/v14/.suo
 
 # Open Files info
 *.opendb
