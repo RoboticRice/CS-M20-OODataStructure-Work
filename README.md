@@ -3,6 +3,7 @@ Moorpark Community College, Computer Science Course: CS M20 - Object Oriented Da
 
 #Submitted As-Is
 These are all the projects the exact way that I turned them in. This is more of a back-up than a seperate branch.
+![Final Grades](https://github.com/RoboticRice/CS-M20-Projects/blob/submitted-as-this/FinalGrades.jpg)
 
 #Topic A Exercise:
 
