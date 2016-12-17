@@ -1,6 +1,7 @@
 # Debugging info
 Debug/
 x64/
+ipch/
 #.vs/ - Discovered this folder has a purpose for TopicA only!
 TopicB/.vs/TopicB/v14/.suo
 TopicD/.vs/TopicD/v14/.suo
