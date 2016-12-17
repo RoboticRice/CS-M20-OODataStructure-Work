@@ -4,7 +4,7 @@ Moorpark Community College, Computer Science Course: CS M20 - Object Oriented Da
 #Submitted As-Is
 These are all the projects the exact way that I turned them in. This is more of a back-up than a seperate branch.
 
-#8.2 Assignment:
+#Topic A Exercise:
 
 #Topic A Project:
 
